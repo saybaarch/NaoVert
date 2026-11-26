@@ -1,0 +1,31 @@
+# Berkas rahasia. Jangan pernah masuk repositori.
+admin.txt
+gobiz.txt
+github & supabase token.txt
+*.pfx
+*.key
+.env
+.env.*
+
+# Keluaran bangunan dan perkakas.
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+AGENTS.md
+
+# Alat ukur sementara.
+alat/ukur-luna.js
+alat/ukur-luna-geometri.js
+
+# Gambar perantara pembuatan video. Hasil akhirnya ada di public/media.
+alat/video/adegan/
+
+# Situs statis lama. Disimpan sebagai rujukan naskah dan gambar, tetapi
+# isinya sudah dipindahkan ke app/ dan public/, jadi tidak ikut dikirim.
+situs-lama/
+
+# Berkas sistem.
+.DS_Store
+Thumbs.db
+*.log
