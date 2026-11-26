@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import KemajuanBaca from "@/components/kemajuan-baca";
 import { situs } from "@/lib/data";
 import "./globals.css";
 
@@ -100,6 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Lompat ke isi utama
         </a>
+        <KemajuanBaca />
         <Header />
         <main id="utama">{children}</main>
         <Footer />

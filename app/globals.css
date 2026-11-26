@@ -171,6 +171,23 @@
   }
 
   /*
+   * Garis kemajuan baca, tipis di paling atas jendela. Panjangnya diatur
+   * komponen lewat --maju. Gunanya memberi tahu sudah sejauh mana halaman
+   * dibaca, tanpa menambah bilah tebal yang memakan ruang.
+   */
+  .kemajuan-baca {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 2px;
+    transform-origin: left center;
+    transform: scaleX(var(--maju, 0));
+    background: var(--tembaga);
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  /*
    * Judul utama. Lebih kecil dari acuan sebelumnya karena kalimatnya lebih
    * panjang: 92px di layar lebar, bukan 109px. Yang membuatnya terasa besar
    * adalah ruang di sekitarnya, bukan angkanya.
