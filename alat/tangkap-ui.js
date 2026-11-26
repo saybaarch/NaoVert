@@ -174,17 +174,26 @@ const jeda = (ms) => new Promise((r) => setTimeout(r, ms));
   });
   await potret('04-proses.png');
 
-  // 5. Selesai: semua berkas berstatus beres.
-  await p.evaluate(() => {
+  // 5. Selesai: semua berkas berstatus beres. Kelas dan teks mengikuti
+  //    statusBadge() asli di app.js: .status-badge.ok berisi "selesai", dan
+  //    barisnya memakai kelas done.
+  const jadiSelesai = await p.evaluate(() => {
     const w = document.querySelector('#progressWrap');
     if (w) w.hidden = true;
-    document.querySelectorAll('#fileList .file-row, #fileList li').forEach((r) => {
-      r.dataset.status = 'done';
-      r.classList.add('is-done', 'done');
-      const s = r.querySelector('.file-status, .status');
-      if (s) s.textContent = 'Selesai';
-    });
+    const baris = [...document.querySelectorAll('#fileList .file-row')];
+    for (const r of baris) {
+      r.classList.add('done');
+      r.classList.remove('running', 'error', 'unsupported');
+      const b = r.querySelector('.status-badge');
+      if (b) {
+        b.className = 'status-badge ok';
+        b.textContent = 'selesai';
+        b.removeAttribute('title');
+      }
+    }
+    return [...document.querySelectorAll('#fileList .status-badge')].map((b) => b.textContent.trim());
   });
+  console.log('  lencana status:', JSON.stringify(jadiSelesai));
   await potret('05-selesai.png');
 
   // 6. Panel pengaturan, memperlihatkan mesin yang sudah terpasang.
@@ -222,7 +231,9 @@ const jeda = (ms) => new Promise((r) => setTimeout(r, ms));
     aksen: getComputedStyle(document.querySelector('#convertBtn')).backgroundColor,
   }));
 
-  fs.writeFileSync(path.join(KELUAR, 'ringkas.json'), JSON.stringify(ringkas, null, 2));
+  // Ringkasan ukuran ditulis di luar folder aset situs supaya tidak ikut
+  // terunggah ke publik.
+  fs.writeFileSync(path.join(__dirname, 'ringkas-ui.json'), JSON.stringify(ringkas, null, 2));
   console.log('\n  baris berkas:', ringkas.jumlahBaris);
   console.log('  latar:', ringkas.latar, '| teks:', ringkas.teks, '| aksen:', ringkas.aksen);
   if (galat.length) {

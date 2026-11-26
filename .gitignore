@@ -32,3 +32,6 @@ situs-lama/
 .DS_Store
 Thumbs.db
 *.log
+
+# foto hasil uji peramban
+.uji/

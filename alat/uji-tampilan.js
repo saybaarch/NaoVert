@@ -11,7 +11,7 @@ const fs = require("fs");
 const ALAMAT = process.env.UJI_URL || "http://localhost:3001";
 const AKAR = path.resolve(__dirname, "..");
 const CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const KELUAR = path.join(AKAR, "alat", "video", "_cek");
+const KELUAR = path.join(AKAR, ".uji");  // foto uji, diabaikan git
 
 const jeda = (ms) => new Promise((r) => setTimeout(r, ms));
 
