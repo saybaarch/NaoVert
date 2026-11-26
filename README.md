@@ -49,6 +49,24 @@ Isi halaman tidak ditulis di dalam komponen. Seluruh naskah dan angka tinggal di
 dihasilkan aplikasi desktop. Kalau kemampuan aplikasi berubah, situs ikut
 berubah tanpa ada yang perlu mengingat angkanya.
 
+## Variabel lingkungan
+
+Situs ini hanya butuh satu variabel, dan bangunan tetap benar walau variabel
+itu belum diisi karena ada nilai cadangannya.
+
+| Nama | Isi | Cadangan |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITUS_URL` | Alamat lengkap situs, tanpa garis miring di akhir | `https://naovert.sayba.id` |
+
+Di Vercel: Settings, Environment Variables, tambahkan `NEXT_PUBLIC_SITUS_URL`
+untuk Production, Preview, dan Development, lalu Redeploy. Daftar lengkapnya
+ada di `.env.example`.
+
+Variabel ini dipakai untuk alamat kanonis halaman, `sitemap.xml`, dan
+`robots.txt`. Karena itu memakai awalan `NEXT_PUBLIC_`: nilainya juga dibaca
+komponen klien, dan kalau hanya tersedia di server hasil render server dan
+klien bisa berbeda. Alamat situs bukan rahasia, jadi tidak masalah terbaca.
+
 ## Pengujian
 
 Alat uji memakai Chromium sungguhan, jadi hasilnya bukan perkiraan.

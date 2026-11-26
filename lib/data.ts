@@ -14,11 +14,23 @@ import formatData from "@/data/format.json";
 
 /* ── identitas ─────────────────────────────────────────────────────────── */
 
+/**
+ * Alamat situs dibaca dari variabel lingkungan supaya domain bisa diganti di
+ * Vercel tanpa mengubah kode. Nilai cadangannya alamat yang dipakai sekarang,
+ * jadi bangunan tetap benar walau variabelnya belum diisi.
+ *
+ * Memakai awalan NEXT_PUBLIC_ karena objek ini juga dipakai komponen klien.
+ * Kalau hanya tersedia di server, hasil render server dan klien bisa berbeda
+ * dan React akan mengeluh saat hidrasi. Alamat situs bukan rahasia.
+ */
+const alamatSitus =
+  process.env.NEXT_PUBLIC_SITUS_URL?.replace(/\/+$/, "") || "https://naovert.sayba.id";
+
 export const situs = {
   nama: "NaoVert",
   pembuat: "Sayba Arc",
   pembuatUrl: "https://sayba.id",
-  url: "https://naovert.sayba.id",
+  url: alamatSitus,
   keterangan:
     "NaoVert mengubah gambar, dokumen, PDF, video, audio, data, e-book, arsip, font, vektor, CAD, dan subtitle di satu aplikasi Windows. Seluruh mesin konversi sudah ikut terpasang.",
   versi: "1.0.0",

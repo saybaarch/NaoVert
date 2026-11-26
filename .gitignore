@@ -6,6 +6,9 @@ github & supabase token.txt
 *.key
 .env
 .env.*
+# Berkas contoh justru harus ikut, supaya orang tahu variabel apa yang perlu
+# diisi tanpa pernah melihat nilai aslinya.
+!.env.example
 
 # Keluaran bangunan dan perkakas.
 node_modules/
