@@ -5,13 +5,13 @@ export default function TidakDitemukan() {
   return (
     <section className="grid min-h-[70vh] place-items-center px-6 py-32">
       <div className="max-w-md text-center">
-        <span className="inline-flex text-kertas-2/35">
+        <span className="inline-flex text-tinta-3">
           <Tanda ukuran={40} />
         </span>
         <h1 className="judul-bagian mt-8">
           Halaman ini
           <br />
-          <span className="text-kertas-2/45">tidak ada.</span>
+          <span className="text-tinta-3">tidak ada.</span>
         </h1>
         <p className="lead mx-auto mt-5">
           Alamatnya mungkin salah ketik, atau halamannya sudah dipindahkan.

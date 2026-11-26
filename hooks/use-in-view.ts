@@ -6,20 +6,29 @@ type Opsi = IntersectionObserverInit & { once?: boolean };
 /**
  * Menandai elemen saat masuk layar, dipakai untuk animasi muncul.
  *
- * Hanya memakai IntersectionObserver, tanpa pustaka animasi. Kalau pengguna
- * memilih mengurangi gerakan, kelas animasinya tidak pernah dipasang, jadi
- * isi tetap terbaca seketika.
+ * Hanya memakai IntersectionObserver, tanpa pustaka animasi. Kalau peramban
+ * tidak punya IntersectionObserver, isinya langsung dianggap terlihat supaya
+ * tidak ada bagian halaman yang tertinggal tak terlihat.
+ *
+ * Opsi dipecah menjadi nilai nilai tunggal, bukan disimpan sebagai objek.
+ * Kalau objek opsi dipakai langsung sebagai dependensi, objek itu dibuat baru
+ * pada setiap render dan observernya dipasang ulang terus menerus.
  */
-export function useInView(options?: Opsi) {
-  const ref = useRef<HTMLDivElement>(null);
+export function useInView<T extends HTMLElement = HTMLDivElement>(
+  options?: Opsi,
+) {
+  const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
-  const { once = true, ...observerOptions } = options ?? {};
+
+  const once = options?.once ?? true;
+  const threshold = options?.threshold ?? 0.12;
+  const rootMargin = options?.rootMargin;
+  const root = options?.root;
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    // Kalau peramban tidak punya IntersectionObserver, tampilkan saja.
     if (typeof IntersectionObserver === "undefined") {
       setInView(true);
       return;
@@ -34,11 +43,18 @@ export function useInView(options?: Opsi) {
           setInView(false);
         }
       },
-      { threshold: 0.12, ...observerOptions },
+      // rootMargin dan root hanya dikirim kalau ada isinya. Nilai undefined
+      // membuat konstruktornya melempar, dan kalau itu terjadi di dalam efek,
+      // seluruh animasi diam diam tidak pernah jalan.
+      {
+        threshold,
+        ...(rootMargin ? { rootMargin } : {}),
+        ...(root ? { root } : {}),
+      },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [once, observerOptions]);
+  }, [once, threshold, rootMargin, root]);
 
   return { ref, inView };
 }

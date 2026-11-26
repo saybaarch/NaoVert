@@ -119,18 +119,22 @@ export const angka = [
 /* ── tangkapan layar ───────────────────────────────────────────────────── */
 
 export const tangkapan = {
-  integrasi: "/shots/settings-shell.png",
-  gabung: "/shots/merge-filled.png",
-  jendela: "/shots/app-01.png",
-  penjelasan: "/shots/vector-open.png",
+  kosong: "/tangkapan/01-kosong.png",
+  berkas: "/tangkapan/02-berkas-masuk.png",
+  format: "/tangkapan/03-pilih-format.png",
+  proses: "/tangkapan/04-proses.png",
+  selesai: "/tangkapan/05-selesai.png",
+  pengaturan: "/tangkapan/06-pengaturan.png",
+  gabung: "/tangkapan/07-gabung.png",
+  terang: "/tangkapan/08-terang.png",
 } as const;
 
 /* ── media ─────────────────────────────────────────────────────────────── */
 
 export const media = {
-  video: "/media/presentasi-naovert.mp4",
-  poster: "/media/poster.jpg",
-  durasi: "00:21",
+  video: "/media/panduan-naovert.mp4",
+  poster: "/media/poster-panduan.jpg",
+  durasi: "00:40",
 } as const;
 
 /* ── naskah bercerita ──────────────────────────────────────────────────── */

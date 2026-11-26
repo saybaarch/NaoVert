@@ -19,7 +19,7 @@ export default function HalamanTentang() {
           <>
             Dibuat karena
             <br />
-            <span className="text-kertas-2/45">memasang itu melelahkan.</span>
+            <span className="text-tinta-3">memasang itu melelahkan.</span>
           </>
         }
         penjelas={`${situs.nama} berawal dari satu masalah sederhana: mengubah satu berkas seharusnya tidak perlu memasang lima program lain lebih dulu.`}
@@ -28,7 +28,7 @@ export default function HalamanTentang() {
       <div className="wadah pb-24">
         <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:gap-16">
           <Muncul>
-            <div className="space-y-5 text-[15px] leading-relaxed text-kertas-2/60">
+            <div className="space-y-5 text-[15px] leading-relaxed text-tinta-2">
               <p>
                 Alat konversi yang ada biasanya bekerja dengan dua cara: mengunggah
                 berkas Anda ke server mereka, atau menyuruh Anda memasang mesin
@@ -47,7 +47,7 @@ export default function HalamanTentang() {
                   href={situs.pembuatUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-kertas/85 underline decoration-garis-2 underline-offset-4 transition-colors hover:text-kertas"
+                  className="text-tinta underline decoration-garis-2 underline-offset-4 transition-colors hover:text-tinta"
                 >
                   {situs.pembuat}
                 </a>
@@ -55,26 +55,26 @@ export default function HalamanTentang() {
               </p>
             </div>
 
-            <div className="mt-10 rounded-xl border border-garis bg-ink-2 p-6">
+            <div className="mt-10 rounded-md border border-garis bg-panel p-6">
               <p className="label">Mesin yang ikut terpasang</p>
-              <p className="mt-3 font-mono text-[12.5px] leading-relaxed text-kertas-2/55">
+              <p className="mt-3 font-mono text-[12.5px] leading-relaxed text-tinta-2">
                 {namaMesin.join(" · ")}
               </p>
-              <p className="mt-4 text-[12.5px] leading-relaxed text-kertas-2/35">
+              <p className="mt-4 text-[12.5px] leading-relaxed text-tinta-3">
                 Daftar ini dibaca langsung dari data kemampuan aplikasi, bukan
                 ditulis terpisah, jadi selalu sama dengan yang benar benar ada.
               </p>
             </div>
           </Muncul>
 
-          <div className="grid gap-px self-start overflow-hidden rounded-2xl border border-garis bg-garis">
+          <div className="grid gap-px self-start overflow-hidden rounded-md border border-garis bg-garis">
             {kemampuan.map((k, i) => (
-              <Muncul key={k.judul} jeda={i * 45} className="bg-ink p-6">
-                <span className="text-kertas-2/45">
+              <Muncul key={k.judul} jeda={i * 45} className="bg-latar p-6">
+                <span className="text-tinta-3">
                   <Ikon nama={k.ikon} ukuran={20} />
                 </span>
                 <h2 className="mt-4 text-[14.5px] font-semibold tracking-[-0.015em]">{k.judul}</h2>
-                <p className="mt-2 text-[13px] leading-relaxed text-kertas-2/50">{k.isi}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-tinta-3">{k.isi}</p>
               </Muncul>
             ))}
           </div>

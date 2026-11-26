@@ -3,76 +3,136 @@
 /*
  * Sistem visual NaoVert.
  *
- * Angka tipografinya bukan kira-kira: diambil dari pengukuran halaman acuan
- * pada lebar 1440. Judul utama 109px dengan tinggi baris 0.98 dan spasi huruf
- * negatif, judul bagian 64px, label kecil 11px berspasi lebar. Skala itu yang
- * membuat halaman terasa seperti dokumen, bukan seperti kartu promosi.
+ * Sumbernya aplikasi itu sendiri, bukan halaman lain. Warna dan huruf di bawah
+ * ini diukur langsung dari jendela NaoVert yang sungguhan:
  *
- * Warnanya satu keluarga gelap: latar hampir hitam, teks putih berlapis
- * opasitas. Aksen hanya satu, tembaga tenang, dipakai sesedikit mungkin.
+ *   latar   rgb(22, 24, 27)    #16181b   arang hangat, bukan biru dingin
+ *   teks    rgb(238, 234, 228) #eeeae4   kertas gading
+ *   aksen   rgb(192, 125, 79)  #c07d4f   tembaga
+ *   sudut   6px pada tombol, tegas, bukan pil
+ *
+ * Situs dan aplikasi memakai satu sistem warna. Orang yang mengunduh aplikasi
+ * setelah melihat situs tidak perlu menyesuaikan mata.
+ *
+ * Dua tema, keduanya bekerja. Gelap adalah bawaan karena aplikasinya gelap,
+ * tetapi terang bukan tambahan: setiap pasangan warna di bawah sudah dihitung
+ * kontrasnya terhadap latarnya dan lulus WCAG AA minimal 4.5:1.
+ *
+ * Angka tipografi tidak mengikuti acuan mana pun. Skalanya diambil dari
+ * kebutuhan dokumen ini: judul besar yang terbaca sebagai pernyataan, lalu
+ * turun cepat ke ukuran baca.
  */
 
 @theme {
-  /* Latar. Tiga tingkat saja: halaman, panel, dan garis. */
-  --color-ink: #04050a;
-  --color-ink-2: #0b0d14;
-  --color-ink-3: #12151f;
-
-  /* Teks. Semua turunan putih, dibedakan opasitasnya. */
-  --color-kertas: #ffffff;
-  --color-kertas-2: #e2e8ff;
-  --color-kertas-3: #b2c2ff;
-
-  /*
-   * Aksen tembaga. Bukan neon, bukan gradasi. Dipakai untuk satu hal saja:
-   * penanda tindakan utama dan angka penting.
-   */
-  --color-tembaga: #c98a5e;
-  --color-tembaga-redup: #8a6244;
-
-  /* Garis. Selalu putih beropasitas rendah. */
-  --color-garis: rgba(255, 255, 255, 0.09);
-  --color-garis-2: rgba(255, 255, 255, 0.16);
-
-  /* Huruf. Satu keluarga sans untuk semua, angka tabular untuk data. */
   --font-sans: var(--font-aksi), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-angka), ui-monospace, monospace;
 
-  /* Lebar isi. */
   --wadah: 1180px;
   --wadah-sempit: 780px;
 }
 
+/* ── token tema ─────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+
+  --latar: #16181b;
+  --latar-panel: #1c1f22;
+  --latar-timbul: #232629;
+
+  --tinta: #eeeae4;
+  --tinta-2: #b3aca2;
+  --tinta-3: #8a857e;
+
+  --tembaga: #c07d4f;
+  --tembaga-redup: #8a6244;
+  --di-atas-tembaga: #16181b;
+
+  --garis: rgba(238, 234, 228, 0.11);
+  --garis-2: rgba(238, 234, 228, 0.2);
+
+  --sorot: rgba(192, 125, 79, 0.14);
+}
+
+:root[data-tema="terang"] {
+  color-scheme: light;
+
+  --latar: #f2efe9;
+  --latar-panel: #fbf9f5;
+  --latar-timbul: #e7e2d9;
+
+  --tinta: #17191c;
+  --tinta-2: #4a4741;
+  --tinta-3: #6b6660;
+
+  --tembaga: #96541f;
+  --tembaga-redup: #b07a4e;
+  --di-atas-tembaga: #fbf9f5;
+
+  --garis: rgba(23, 25, 28, 0.12);
+  --garis-2: rgba(23, 25, 28, 0.24);
+
+  --sorot: rgba(150, 84, 31, 0.12);
+}
+
+@theme inline {
+  --color-latar: var(--latar);
+  --color-panel: var(--latar-panel);
+  --color-timbul: var(--latar-timbul);
+
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-tinta-3: var(--tinta-3);
+
+  --color-tembaga: var(--tembaga);
+  --color-tembaga-redup: var(--tembaga-redup);
+  --color-di-atas-tembaga: var(--di-atas-tembaga);
+
+  --color-garis: var(--garis);
+  --color-garis-2: var(--garis-2);
+}
+
+/* ── dasar ──────────────────────────────────────────────────────────────── */
+
 @layer base {
   * {
-    border-color: var(--color-garis);
+    border-color: var(--garis);
   }
 
   html {
-    background: var(--color-ink);
+    background: var(--latar);
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    scroll-padding-top: 96px;
   }
 
   body {
-    background: var(--color-ink);
-    color: var(--color-kertas);
+    background: var(--latar);
+    color: var(--tinta);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv01";
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    transition: background-color 220ms ease, color 220ms ease;
   }
 
   /* Fokus selalu terlihat. Tanpa ini pengguna papan ketik tersesat. */
   :focus-visible {
-    outline: 2px solid var(--color-tembaga);
+    outline: 2px solid var(--tembaga);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 3px;
   }
 
   ::selection {
-    background: var(--color-tembaga);
-    color: var(--color-ink);
+    background: var(--tembaga);
+    color: var(--di-atas-tembaga);
+  }
+
+  @media print {
+    html,
+    body {
+      background: #fff;
+      color: #000;
+    }
   }
 
   /* Hormati pilihan pengguna yang tidak ingin gerakan. */
@@ -90,8 +150,9 @@
   }
 }
 
+/* ── komponen ───────────────────────────────────────────────────────────── */
+
 @layer components {
-  /* Wadah isi. Satu lebar untuk seluruh situs supaya tepi kiri kanan rata. */
   .wadah {
     width: 100%;
     max-width: var(--wadah);
@@ -110,98 +171,126 @@
   }
 
   /*
-   * Judul utama. Ukuran memakai clamp supaya di ponsel tidak melimpah dan di
-   * layar lebar tidak kekecilan. Rasio 109/1440 sama dengan acuan.
+   * Judul utama. Lebih kecil dari acuan sebelumnya karena kalimatnya lebih
+   * panjang: 92px di layar lebar, bukan 109px. Yang membuatnya terasa besar
+   * adalah ruang di sekitarnya, bukan angkanya.
    */
   .judul-besar {
-    font-size: clamp(2.6rem, 7.6vw, 6.84rem);
-    line-height: 0.98;
-    letter-spacing: -0.05em;
+    font-size: clamp(2.5rem, 6.4vw, 5.75rem);
+    line-height: 0.99;
+    letter-spacing: -0.042em;
     font-weight: 620;
     text-wrap: balance;
   }
 
   .judul-bagian {
-    font-size: clamp(1.9rem, 4.5vw, 4rem);
-    line-height: 1.02;
-    letter-spacing: -0.045em;
+    font-size: clamp(1.85rem, 4vw, 3.25rem);
+    line-height: 1.04;
+    letter-spacing: -0.038em;
     font-weight: 600;
     text-wrap: balance;
   }
 
   .judul-kecil {
-    font-size: clamp(1.35rem, 2.6vw, 2rem);
-    line-height: 1.15;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    line-height: 1.18;
+    letter-spacing: -0.026em;
     font-weight: 600;
   }
 
-  /* Label kecil di atas judul. Huruf besar, spasi lebar, warna redup. */
+  /* Label kecil. Huruf besar berspasi lebar, warnanya sudah lulus kontras. */
   .label {
     font-size: 0.6875rem;
-    letter-spacing: 0.19em;
+    letter-spacing: 0.17em;
     text-transform: uppercase;
     font-weight: 500;
-    color: rgba(226, 232, 255, 0.46);
+    color: var(--tinta-3);
   }
 
   .lead {
     font-size: 1.0625rem;
-    line-height: 1.65;
-    color: rgba(238, 241, 255, 0.64);
+    line-height: 1.68;
+    color: var(--tinta-2);
     max-width: 62ch;
   }
 
-  /* Tombol. Dua bentuk saja: isi dan garis. */
+  /*
+   * Tombol. Sudutnya 6px, sama dengan tombol di dalam aplikasi. Bentuk pil
+   * ditinggalkan karena tidak ada satu pun sudut pil di aplikasinya.
+   */
   .tombol {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
-    height: 46px;
-    padding-inline: 1.35rem;
-    border-radius: 999px;
-    background: var(--color-kertas);
-    color: var(--color-ink);
+    height: 44px;
+    padding-inline: 1.25rem;
+    border-radius: 6px;
+    background: var(--tinta);
+    color: var(--latar);
     font-size: 0.875rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
-    transition: transform 160ms ease, background-color 160ms ease;
+    letter-spacing: -0.006em;
+    transition: background-color 160ms ease, transform 160ms ease;
   }
 
   .tombol:hover {
-    background: var(--color-kertas-2);
-    transform: translateY(-1px);
+    background: var(--tinta-2);
+  }
+
+  .tombol:active {
+    transform: translateY(1px);
   }
 
   .tombol:disabled {
-    opacity: 0.55;
-    transform: none;
+    opacity: 0.5;
     cursor: default;
+    transform: none;
+  }
+
+  .tombol-tembaga {
+    background: var(--tembaga);
+    color: var(--di-atas-tembaga);
+  }
+
+  .tombol-tembaga:hover {
+    background: var(--tembaga);
+    filter: brightness(1.1);
   }
 
   .tombol-garis {
     background: transparent;
-    color: var(--color-kertas);
-    box-shadow: inset 0 0 0 1px var(--color-garis-2);
+    color: var(--tinta);
+    box-shadow: inset 0 0 0 1px var(--garis-2);
   }
 
   .tombol-garis:hover {
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-1px);
+    background: var(--latar-panel);
   }
 
-  /* Garis pemisah bagian. Satu garis tipis, bukan kotak berwarna. */
   .pemisah {
-    border-top: 1px solid var(--color-garis);
+    border-top: 1px solid var(--garis);
   }
 
-  /* Muncul saat masuk layar. Dipasang lewat hook useInView. */
+  /* Panel. Satu tingkat elevasi, dipakai untuk isi yang bisa dibuka. */
+  .panel {
+    background: var(--latar-panel);
+    border: 1px solid var(--garis);
+    border-radius: 10px;
+  }
+
+  /* ── gerak ────────────────────────────────────────────────────────────── */
+
+  /*
+   * Muncul saat masuk layar. Tujuannya satu: mata mengikuti urutan baca
+   * tanpa harus dilompati. Dipakai lewat hook useInView, jadi bukan animasi
+   * otomatis pada setiap elemen.
+   */
   .masuk {
     opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(16px);
+    transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .masuk-tampil {
@@ -209,24 +298,33 @@
     transform: none;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .masuk {
-      opacity: 1;
-      transform: none;
-    }
+  /*
+   * Garis tahap: penanda urutan kerja pada bagian cara pakai. Panjangnya
+   * tumbuh saat bagian itu terlihat, jadi orang tahu ada tiga langkah, bukan
+   * satu daftar tanpa akhir.
+   */
+  .garis-tahap {
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .garis-tahap-tampil {
+    transform: scaleX(1);
   }
 
   /*
-   * Pita format bergulir. Digeser setengah lebar karena isinya digandakan,
-   * jadi titik akhirnya sama persis dengan titik awal dan tidak terlihat
-   * melompat. Berhenti total saat pengguna memilih mengurangi gerakan, dan
-   * berhenti saat disorot supaya bisa dibaca.
+   * Pita format bergulir. Isinya digandakan, jadi titik akhirnya sama persis
+   * dengan titik awal dan tidak terlihat melompat. Berhenti saat disorot
+   * supaya bisa dibaca, dan berhenti total saat pengguna memilih mengurangi
+   * gerakan.
    */
   .pita-isi {
-    animation: geser-pita 64s linear infinite;
+    animation: geser-pita 72s linear infinite;
   }
 
-  .pita-isi:hover {
+  .pita-isi:hover,
+  .pita-isi:focus-within {
     animation-play-state: paused;
   }
 
@@ -240,8 +338,120 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .masuk {
+      opacity: 1;
+      transform: none;
+    }
+    .garis-tahap {
+      transform: scaleX(1);
+    }
     .pita-isi {
       animation: none;
+    }
+  }
+
+  /* ── gerak ────────────────────────────────────────────────────────────── */
+
+  /*
+   * Angka berjalan. Dipakai pada angka besar di pita angka dan hero: nilainya
+   * dihitung naik dari nol saat bagian itu masuk layar.
+   *
+   * Angka tidak boleh berubah lebar saat naik, karena teks di sebelahnya akan
+   * ikut bergeser dan terbaca sebagai kedutan. Karena itu seluruh angka
+   * memakai `tabular-nums` di komponennya.
+   */
+  .hitung-angka {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /*
+   * Garis tumbuh. Elemen dengan kelas ini diberi --panjang oleh komponennya,
+   * lalu lebarnya tumbuh dari nol ke panjang itu sekali saja saat terlihat.
+   */
+  .tumbuh {
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tumbuh-tampil {
+    transform: scaleX(1);
+  }
+
+  /*
+   * Judul hero: tiap baris naik sendiri, berurutan. Ditunda lewat --tunda
+   * supaya baris pertama mendarat lebih dulu.
+   */
+  .baris-judul {
+    display: block;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 760ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--tunda, 0ms);
+  }
+
+  .baris-judul-tampil {
+    opacity: 1;
+    transform: none;
+  }
+
+  /*
+   * Kartu yang sedikit miring mengikuti kursor. Hanya pada perangkat yang
+   * punya kursor presisi; di layar sentuh tidak ada yang bisa diikuti, jadi
+   * kartunya dibiarkan tegak.
+   *
+   * Kemiringannya kecil (paling jauh 0,8 derajat) karena tujuannya memberi
+   * kesan benda, bukan membuat kartu terlempar.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .miring-kursor {
+      transform: perspective(900px)
+        rotateX(calc(var(--my, 0) * -1deg))
+        rotateY(calc(var(--mx, 0) * 1deg));
+      transition: transform 220ms ease-out;
+      will-change: transform;
+    }
+  }
+
+  /*
+   * Penanda bagian: garis pendek yang memanjang saat bagiannya terlihat.
+   * Dipakai pada label kecil di atas judul bagian.
+   */
+  .label-garis::before {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 1px;
+    margin-right: 0;
+    vertical-align: middle;
+    background: var(--tembaga);
+    transition: width 700ms cubic-bezier(0.16, 1, 0.3, 1),
+                margin-right 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .label-garis-tampil::before {
+    width: 18px;
+    margin-right: 9px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tumbuh,
+    .tumbuh-tampil {
+      transform: scaleX(1);
+    }
+    .baris-judul,
+    .baris-judul-tampil {
+      opacity: 1;
+      transform: none;
+    }
+    .miring-kursor {
+      transform: none;
+    }
+    .label-garis::before {
+      width: 18px;
+      margin-right: 9px;
     }
   }
 }

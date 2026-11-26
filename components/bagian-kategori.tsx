@@ -22,7 +22,7 @@ export default function BagianKategori() {
             <>
               Tiga belas kategori,
               <br />
-              <span className="text-kertas-2/45">satu cara kerja.</span>
+              <span className="text-tinta-3">satu cara kerja.</span>
             </>
           }
           penjelas="Setiap kategori punya mesin sendiri yang dipilih menurut jenis berkasnya. Anda tidak perlu tahu mesin mana yang dipakai, cukup pilih berkas lalu pilih format tujuan."
@@ -32,35 +32,35 @@ export default function BagianKategori() {
           {keluarga.map((k, i) => (
             <Muncul key={k.id} jeda={Math.min(i * 40, 240)}>
               <details className="group border-b border-garis">
-                <summary className="flex cursor-pointer list-none items-baseline gap-4 py-5 pr-2 transition-colors hover:bg-white/[0.02] md:gap-6 md:py-6">
-                  <span className="w-6 shrink-0 font-mono text-[11.5px] text-kertas-2/30">
+                <summary className="flex cursor-pointer list-none items-baseline gap-4 py-5 pr-2 transition-colors hover:bg-timbul md:gap-6 md:py-6">
+                  <span className="w-6 shrink-0 font-mono text-[11.5px] text-tinta-3">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="judul-kecil flex-1 text-kertas/90 group-open:text-kertas">
+                  <span className="judul-kecil flex-1 text-tinta group-open:text-tinta">
                     {k.judul}
                   </span>
-                  <span className="hidden shrink-0 font-mono text-[11.5px] text-kertas-2/35 sm:block">
+                  <span className="hidden shrink-0 font-mono text-[11.5px] text-tinta-3 sm:block">
                     {k.masuk.length} masuk / {k.keluar.length} keluar
                   </span>
-                  <span className="shrink-0 text-kertas-2/30 transition-transform group-open:rotate-45">
+                  <span className="shrink-0 text-tinta-3 transition-transform group-open:rotate-45">
                     <Ikon nama="tutup" ukuran={16} />
                   </span>
                 </summary>
 
                 <div className="grid gap-6 pb-7 pl-10 pr-2 md:grid-cols-[1.4fr_1fr] md:pl-16">
                   <div>
-                    <p className="text-[14.5px] leading-relaxed text-kertas-2/60">{k.detail}</p>
+                    <p className="text-[14.5px] leading-relaxed text-tinta-2">{k.detail}</p>
                     {k.catatan && (
-                      <p className="mt-3 border-l-2 border-tembaga/40 pl-3 text-[13px] leading-relaxed text-kertas-2/45">
+                      <p className="mt-3 border-l-2 border-tembaga/40 pl-3 text-[13px] leading-relaxed text-tinta-3">
                         {k.catatan}
                       </p>
                     )}
                   </div>
                   <div className="text-[12.5px]">
                     <p className="label mb-2">Mesin</p>
-                    <p className="font-mono text-kertas-2/70">{k.mesin}</p>
+                    <p className="font-mono text-tinta-2">{k.mesin}</p>
                     <p className="label mb-2 mt-4">Contoh keluaran</p>
-                    <p className="font-mono uppercase leading-relaxed text-kertas-2/50">
+                    <p className="font-mono uppercase leading-relaxed text-tinta-3">
                       {k.keluar.slice(0, 10).join(" · ")}
                     </p>
                   </div>
@@ -75,7 +75,7 @@ export default function BagianKategori() {
             Cari format tertentu
             <Ikon nama="panah" ukuran={17} />
           </Link>
-          <span className="text-[12.5px] text-kertas-2/40">
+          <span className="text-[12.5px] text-tinta-3">
             Daftar lengkap berisi {jumlahTujuan} tujuan konversi, bisa dicari per nama format.
           </span>
         </div>

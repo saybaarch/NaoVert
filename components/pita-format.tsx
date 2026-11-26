@@ -20,7 +20,7 @@ export default function PitaFormat() {
         {isi.map((f, i) => (
           <span
             key={`${f}-${i}`}
-            className="rounded-full border border-garis px-3.5 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.1em] text-kertas-2/40"
+            className="rounded-md border border-garis px-3.5 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.1em] text-tinta-3"
           >
             {f}
           </span>

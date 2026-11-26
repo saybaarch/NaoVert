@@ -18,7 +18,7 @@ export default function BagianPenutup() {
           <p className="label">{penutup.label}</p>
           <h2 className="judul-besar mt-6">
             {penutup.judul.map((baris, i) => (
-              <span key={baris} className={i === 0 ? "block" : "block text-kertas-2/40"}>
+              <span key={baris} className={i === 0 ? "block" : "block text-tinta-3"}>
                 {baris}
               </span>
             ))}
@@ -36,7 +36,7 @@ export default function BagianPenutup() {
             </Link>
           </div>
 
-          <p className="mt-8 text-[12.5px] text-kertas-2/35">
+          <p className="mt-8 text-[12.5px] text-tinta-3">
             {situs.sistem}. Gratis, tanpa akun, tanpa batas jumlah berkas.
           </p>
         </Muncul>

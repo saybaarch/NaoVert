@@ -18,14 +18,14 @@ export default function BagianBab() {
         <section key={b.nomor} className="border-b border-garis">
           <div className="wadah py-20 md:py-32">
             <Muncul className="mx-auto max-w-3xl text-center">
-              <p className="font-mono text-[11.5px] tracking-[0.16em] text-kertas-2/35">
+              <p className="font-mono text-[11.5px] tracking-[0.16em] text-tinta-3">
                 {b.nomor}
               </p>
               <h2 className="judul-bagian mt-6">
                 {b.judul.map((baris, i) => (
                   <span
                     key={baris}
-                    className={i === 0 ? "block" : "block text-kertas-2/40"}
+                    className={i === 0 ? "block" : "block text-tinta-3"}
                   >
                     {baris}
                   </span>

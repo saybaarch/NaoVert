@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import LabelGaris from "@/components/label-garis";
 import type { ReactNode } from "react";
 
 /**
@@ -27,11 +28,11 @@ export default function KepalaBagian({
     <div className={cn("max-w-3xl", tengah && "mx-auto text-center", className)}>
       <div className={cn("flex items-center gap-3", tengah && "justify-center")}>
         {nomor && (
-          <span className="font-mono text-[12px] font-semibold tracking-[0.08em] text-kertas-3">
+          <span className="font-mono text-[12px] font-semibold tracking-[0.08em] text-tinta-3">
             {nomor}
           </span>
         )}
-        <span className="label">{label}</span>
+        <LabelGaris>{label}</LabelGaris>
       </div>
 
       <h2 className="judul-bagian mt-4">{judul}</h2>

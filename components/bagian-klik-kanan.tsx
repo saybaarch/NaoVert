@@ -36,7 +36,7 @@ export default function BagianKlikKanan() {
             <h2 className="judul-bagian mt-4">
               Klik kanan berkas,
               <br />
-              <span className="text-kertas-2/45">pilih format, selesai.</span>
+              <span className="text-tinta-3">pilih format, selesai.</span>
             </h2>
             <p className="lead mt-5">
               Setelah fitur ini dinyalakan di Pengaturan, menu klik kanan Windows
@@ -50,30 +50,30 @@ export default function BagianKlikKanan() {
                   <span className="mt-0.5 shrink-0 text-tembaga">
                     <Ikon nama="centang" ukuran={17} />
                   </span>
-                  <p className="text-[14px] leading-relaxed text-kertas-2/55">
-                    <b className="font-semibold text-kertas/85">{b.tebal}</b> {b.isi}
+                  <p className="text-[14px] leading-relaxed text-tinta-2">
+                    <b className="font-semibold text-tinta">{b.tebal}</b> {b.isi}
                   </p>
                 </li>
               ))}
             </ul>
           </div>
 
-          <Muncul className="overflow-hidden rounded-2xl border border-garis bg-ink-2">
+          <Muncul className="overflow-hidden rounded-md border border-garis bg-panel">
             <div className="flex items-center gap-2 border-b border-garis px-4 py-2.5">
               <span className="flex gap-1.5" aria-hidden="true">
-                <i className="size-2 rounded-full bg-white/12" />
-                <i className="size-2 rounded-full bg-white/12" />
-                <i className="size-2 rounded-full bg-white/12" />
+                <i className="size-2 rounded-full bg-tinta-3/30" />
+                <i className="size-2 rounded-full bg-tinta-3/30" />
+                <i className="size-2 rounded-full bg-tinta-3/30" />
               </span>
-              <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-kertas-2/30">
+              <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-tinta-3">
                 Pengaturan integrasi Windows
               </span>
             </div>
             <Image
-              src={tangkapan.integrasi}
+              src={tangkapan.pengaturan}
               alt="Panel Pengaturan NaoVert yang menampilkan sakelar untuk menu klik kanan, ikon baki, dan hidup otomatis saat Windows dinyalakan."
-              width={1583}
-              height={923}
+              width={2480}
+              height={1560}
               sizes="(max-width: 1024px) 100vw, 640px"
               className="h-auto w-full"
             />

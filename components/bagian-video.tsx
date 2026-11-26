@@ -1,41 +1,66 @@
+import { media } from "@/lib/data";
 import KepalaBagian from "@/components/kepala-bagian";
-import Muncul from "@/components/muncul";
 import PemutarVideo from "@/components/pemutar-video";
+import Muncul from "@/components/muncul";
 
 /**
- * Bagian presentasi.
+ * Bagian video panduan.
  *
- * Video ditaruh sebagai bagian yang bisa diputar, bukan latar yang berjalan
- * sendiri. Alasannya sederhana: rekaman kerja aplikasi lebih berguna saat
- * orang memutuskan menonton, bukan saat ia dilewati.
+ * Videonya bukan lagi presentasi gambar diam. Isinya rekaman aplikasi yang
+ * sungguhan, berjalan mengikuti urutan pemakaian: buka, masukkan berkas, pilih
+ * format, jalankan, ambil hasil, atur sekali. Tiap adegan disorot pada bagian
+ * yang sedang dijelaskan, dengan satu kalimat di bawahnya.
+ *
+ * Karena itu judul bagiannya menyebut panduan pemakaian, bukan "lihat
+ * sekilas". Orang yang menekan putar harus tahu ia akan diajari sesuatu.
  */
 export default function BagianVideo() {
   return (
-    <section className="pemisah">
+    <section id="panduan" className="pemisah scroll-mt-24">
       <div className="wadah py-20 md:py-28">
         <KepalaBagian
-          label="Lihat cara kerjanya"
+          nomor="02"
+          label="Panduan pemakaian"
           judul={
             <>
-              Dua puluh satu detik,
+              Cara memakainya,
               <br />
-              <span className="text-kertas-2/45">dari berkas ke format baru.</span>
+              <span className="text-tinta-3">dalam enam puluh detik.</span>
             </>
           }
-          penjelas="Rekaman ini diambil dari aplikasi yang berjalan, bukan simulasi. Berkas dimasukkan, format dipilih, hasilnya muncul di folder yang sama."
+          penjelas="Rekaman aplikasi yang sesungguhnya, bukan gambar hiasan. Setiap langkah disorot supaya jelas bagian mana yang sedang dipakai."
         />
 
         <Muncul className="mt-12">
           <PemutarVideo />
         </Muncul>
 
-        <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[12.5px] text-kertas-2/40">
-          <li>Tanpa suara</li>
-          <li aria-hidden="true">·</li>
-          <li>Rekaman aplikasi asli</li>
-          <li aria-hidden="true">·</li>
-          <li>1,1 MB, tidak dimuat sebelum Anda menekan putar</li>
-        </ul>
+        <div className="mt-6 grid gap-x-8 gap-y-3 text-[13.5px] text-tinta-2 sm:grid-cols-3">
+          <p>
+            <span className="font-mono text-[11.5px] tracking-[0.08em] text-tembaga">01</span>{" "}
+            Masukkan berkas, bisa banyak sekaligus.
+          </p>
+          <p>
+            <span className="font-mono text-[11.5px] tracking-[0.08em] text-tembaga">02</span>{" "}
+            Pilih format yang memang tersedia.
+          </p>
+          <p>
+            <span className="font-mono text-[11.5px] tracking-[0.08em] text-tembaga">03</span>{" "}
+            Hasil masuk ke folder yang sama.
+          </p>
+        </div>
+
+        <p className="mt-6 text-[13px] text-tinta-3">
+          Durasi {media.durasi}.{" "}
+          <a
+            href={media.video}
+            download
+            className="text-tinta-2 underline-offset-4 transition-colors hover:text-tinta hover:underline"
+          >
+            Unduh videonya
+          </a>{" "}
+          kalau ingin diputar tanpa jaringan.
+        </p>
       </div>
     </section>
   );

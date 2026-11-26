@@ -18,7 +18,7 @@ export default function HalamanFormat() {
           <>
             Cari berkas Anda,
             <br />
-            <span className="text-kertas-2/45">lihat tujuannya.</span>
+            <span className="text-tinta-3">lihat tujuannya.</span>
           </>
         }
         penjelas={`${jumlahEkstensi} jenis berkas dikenali dan ${jumlahTujuan} tujuan konversi. Ketik nama format untuk menyaring, atau buka satu kategori untuk melihat seluruh daftarnya.`}

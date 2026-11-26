@@ -42,19 +42,19 @@ export default function HalamanPanduan() {
           <>
             Dari pemasang
             <br />
-            <span className="text-kertas-2/45">sampai hasil.</span>
+            <span className="text-tinta-3">sampai hasil.</span>
           </>
         }
         penjelas="Tiga langkah untuk mulai, lalu jawaban atas pertanyaan yang paling sering muncul."
       />
 
       <div className="wadah pb-24">
-        <ol className="grid gap-px overflow-hidden rounded-2xl border border-garis bg-garis md:grid-cols-3">
+        <ol className="grid gap-px overflow-hidden rounded-md border border-garis bg-garis md:grid-cols-3">
           {langkah.map((l, i) => (
-            <Muncul key={l.nomor} jeda={i * 70} className="bg-ink p-7 md:p-8">
+            <Muncul key={l.nomor} jeda={i * 70} className="bg-latar p-7 md:p-8">
               <span className="font-mono text-[12px] tracking-[0.1em] text-tembaga">{l.nomor}</span>
               <h2 className="mt-4 text-[16.5px] font-semibold tracking-[-0.02em]">{l.judul}</h2>
-              <p className="mt-2.5 text-[13.5px] leading-relaxed text-kertas-2/50">{l.isi}</p>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed text-tinta-3">{l.isi}</p>
             </Muncul>
           ))}
         </ol>
@@ -64,15 +64,15 @@ export default function HalamanPanduan() {
           <div className="mt-5 border-t border-garis">
             {tanya.map((q) => (
               <details key={q.t} className="group border-b border-garis">
-                <summary className="flex cursor-pointer list-none items-center gap-4 py-5 transition-colors hover:bg-white/[0.02]">
-                  <span className="flex-1 text-[15.5px] font-medium tracking-[-0.015em] text-kertas/90">
+                <summary className="flex cursor-pointer list-none items-center gap-4 py-5 transition-colors hover:bg-timbul">
+                  <span className="flex-1 text-[15.5px] font-medium tracking-[-0.015em] text-tinta">
                     {q.t}
                   </span>
-                  <span className="shrink-0 text-kertas-2/30 transition-transform group-open:rotate-45">
+                  <span className="shrink-0 text-tinta-3 transition-transform group-open:rotate-45">
                     <Ikon nama="tutup" ukuran={16} />
                   </span>
                 </summary>
-                <p className="max-w-2xl pb-6 pr-8 text-[14px] leading-relaxed text-kertas-2/55">
+                <p className="max-w-2xl pb-6 pr-8 text-[14px] leading-relaxed text-tinta-2">
                   {q.j}
                 </p>
               </details>

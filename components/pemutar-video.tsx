@@ -5,11 +5,14 @@ import { media } from "@/lib/data";
 import Ikon from "@/components/ikon";
 
 /**
- * Pemutar presentasi.
+ * Pemutar panduan.
  *
- * Video tidak dimuat sebelum ditekan. Poster yang tampil lebih dulu, dan
- * tombol tutupnya baru dilepas setelah pemutaran benar benar dimulai, jadi
- * tidak ada video 1,1 MB yang ikut terunduh hanya karena halaman dibuka.
+ * Video tidak diunduh sebelum ditekan. Yang tampil lebih dulu hanya poster,
+ * jadi 3,2 MB tidak ikut terkirim ke setiap orang yang membuka beranda dan
+ * tidak jadi menonton.
+ *
+ * Sudutnya mengikuti aplikasi (6px), bukan bulat penuh. Tombol putarnya pun
+ * kotak bersudut, supaya bentuknya satu bahasa dengan tombol lain di situs.
  */
 export default function PemutarVideo() {
   const [putar, setPutar] = useState(false);
@@ -17,50 +20,56 @@ export default function PemutarVideo() {
 
   const mulai = () => {
     setPutar(true);
-    // Tunggu satu bingkai supaya elemen video sempat terpasang.
+    // Tunggu satu bingkai supaya kendali video sempat terpasang.
     requestAnimationFrame(() => {
       video.current?.play().catch(() => {
-        // Kalau peramban menolak memutar otomatis, kendali tetap ada di
-        // elemen video, jadi pengguna bisa menekan tombol putar sendiri.
+        // Kalau peramban menolak memutar otomatis, kendali sudah terpasang,
+        // jadi pengguna bisa menekan tombol putar sendiri.
       });
     });
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-garis bg-ink-2">
-      <div className="relative aspect-video">
-        <video
-          ref={video}
-          className="size-full object-cover"
-          controls={putar}
-          preload="none"
-          playsInline
-          poster={media.poster}
-          width={1280}
-          height={720}
-        >
-          <source src={media.video} type="video/mp4" />
-          Peramban Anda tidak memutar video MP4.
-          <a href={media.video}>Unduh berkas videonya</a>.
-        </video>
-
-        {!putar && (
-          <button
-            type="button"
-            onClick={mulai}
-            className="group absolute inset-0 grid place-items-center bg-ink/30 transition-colors hover:bg-ink/15"
-            aria-label="Putar video presentasi NaoVert"
+    <figure className="m-0">
+      <div className="relative overflow-hidden rounded-md border border-garis bg-panel">
+        <div className="relative aspect-video">
+          <video
+            ref={video}
+            className="size-full object-cover"
+            controls={putar}
+            preload="none"
+            playsInline
+            poster={media.poster}
+            width={1280}
+            height={720}
           >
-            <span className="flex items-center gap-3 rounded-full bg-kertas px-5 py-2.5 text-[13.5px] font-semibold text-ink shadow-lg transition-transform group-hover:scale-[1.03]">
-              <Ikon nama="putar" ukuran={17} />
-              Putar presentasi
-            </span>
-            <span className="absolute bottom-4 right-4 rounded-full bg-ink/70 px-2.5 py-1 font-mono text-[11px] tracking-[0.08em] text-kertas-2/70 backdrop-blur">
-              {media.durasi}
-            </span>
-          </button>
-        )}
+            <source src={media.video} type="video/mp4" />
+            Peramban Anda tidak memutar video MP4.
+            <a href={media.video}>Unduh berkas videonya</a>.
+          </video>
+
+          {!putar && (
+            <button
+              type="button"
+              onClick={mulai}
+              className="group absolute inset-0 grid place-items-center bg-latar/25 transition-colors hover:bg-latar/10"
+              aria-label="Putar video panduan pemakaian NaoVert"
+            >
+              <span className="flex items-center gap-2.5 rounded-md border border-garis-2 bg-tinta px-4 py-2.5 text-[13.5px] font-semibold text-latar transition-transform group-hover:scale-[1.02]">
+                <Ikon nama="main" ukuran={15} />
+                Putar panduan
+              </span>
+              <span className="absolute bottom-3.5 right-3.5 rounded-sm bg-latar/75 px-2 py-1 font-mono text-[11px] tracking-[0.08em] text-tinta-2 backdrop-blur-sm">
+                {media.durasi}
+              </span>
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+
+      <figcaption className="mt-2.5 text-[12.5px] text-tinta-3">
+        Rekaman langsung dari aplikasi NaoVert versi terbaru.
+      </figcaption>
+    </figure>
   );
 }

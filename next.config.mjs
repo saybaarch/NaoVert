@@ -31,11 +31,6 @@ const nextConfig = {
     ]
   },
 
-  // Next.js 16 menulis berkas panduan agen sendiri. Situs ini tidak butuh
-  // berkas itu, jadi dimatikan supaya folder tetap bersih.
-  experimental: {
-    agentRules: false,
-  },
 }
 
 export default nextConfig
