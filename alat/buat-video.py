@@ -13,6 +13,7 @@ alat/tangkap-ui.js yang menjalankan src/renderer/index.html aplikasi.
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import tempfile
@@ -24,6 +25,11 @@ AKAR = Path(__file__).resolve().parent.parent
 UI = AKAR / "public" / "tangkapan"
 KELUAR = AKAR / "public" / "media"
 
+# Alamat yang ditulis di penutup video mengikuti variabel lingkungan yang sama
+# dengan situs, supaya tidak pernah menunjuk alamat yang salah.
+ALAMAT = os.environ.get("NEXT_PUBLIC_SITUS_URL", "https://naovert.vercel.app")
+ALAMAT = ALAMAT.split("://")[-1].rstrip("/")
+
 # Warna diambil dari app/globals.css supaya video dan situs satu keluarga.
 LATAR = (22, 24, 27)
 TINTA = (238, 234, 228)
@@ -31,10 +37,17 @@ TINTA_2 = (179, 172, 162)
 TEMBAGA = (192, 125, 79)
 ARANG = (32, 35, 38)
 
-W, H = 1280, 720
+W, H = 1920, 1080
 FONT_TEBAL = "C:/Windows/Fonts/segoeuib.ttf"
 FONT_BIASA = "C:/Windows/Fonts/segoeui.ttf"
 FONT_MONO = "C:/Windows/Fonts/consola.ttf"
+
+# Ukuran tata letak dihitung dari kanvas 1920x1080.
+PANEL_W = 1440
+PANEL_X = (W - PANEL_W) // 2
+PANEL_Y = 70
+JUDUL_Y = 26
+JUDUL_UKURAN = 34
 
 # Satu adegan: gambar, kalimat penjelas, dan bagian yang disorot.
 # Sorotan ditulis sebagai pecahan (x0, y0, x1, y1) dari gambar aslinya.
@@ -94,13 +107,20 @@ DURASI = 5.0
 TRANSISI = 0.45
 
 def bingkai(adegan: dict, keluar: Path) -> None:
-    """Menyusun satu bingkai 1280x720 dari tangkapan aplikasi."""
+    """Menyusun satu bingkai 1920x1080 dari tangkapan aplikasi."""
     sumber = Image.open(UI / adegan["berkas"]).convert("RGB")
 
-    # Tangkapan diambil pada 2x, jadi diperkecil ke ukuran panel.
-    panel_w = 1084
+    # Tangkapan diambil pada 2x. Panel disesuaikan ukurannya supaya kalimat
+    # penjelas dan penanda bawah tidak pernah bertabrakan, berapa pun tinggi
+    # tangkapannya. Lebar maksimum dipakai bila masih muat.
+    band = 100                      # ruang untuk dua baris kalimat
+    bawah = 62                      # ruang untuk penanda bawah
+    panel_h_max = H - PANEL_Y - band - bawah
+    panel_w = min(PANEL_W, int(panel_h_max * sumber.width / sumber.height))
     panel_h = int(sumber.height * panel_w / sumber.width)
     panel = sumber.resize((panel_w, panel_h), Image.LANCZOS)
+    px = (W - panel_w) // 2
+    py = PANEL_Y
 
     kanvas = Image.new("RGB", (W, H), LATAR)
 
@@ -108,16 +128,15 @@ def bingkai(adegan: dict, keluar: Path) -> None:
     from PIL import ImageDraw, ImageFont
 
     d = ImageDraw.Draw(kanvas)
-    d.text((98, 34), adegan["judul"], font=ImageFont.truetype(FONT_TEBAL, 30), fill=TINTA)
+    d.text((px, JUDUL_Y), adegan["judul"], font=ImageFont.truetype(FONT_TEBAL, JUDUL_UKURAN), fill=TINTA)
 
     # Label kecil di kanan atas.
-    kecil = ImageFont.truetype(FONT_MONO, 15)
+    kecil = ImageFont.truetype(FONT_MONO, 19)
     teks_kanan = "NAOVERT  /  PANDUAN PEMAKAIAN"
     lebar = d.textlength(teks_kanan, font=kecil)
-    d.text((W - 98 - lebar, 44), teks_kanan, font=kecil, fill=TINTA_2)
+    d.text((W - px - lebar, JUDUL_Y + 12), teks_kanan, font=kecil, fill=TINTA_2)
 
     # Panel aplikasi dengan bingkai tipis.
-    px, py = 98, 92
     kanvas.paste(panel, (px, py))
 
     # Sorotan: kotak tembaga tipis di sekitar bagian yang dibicarakan.
@@ -126,33 +145,33 @@ def bingkai(adegan: dict, keluar: Path) -> None:
     sy0 = py + int(y0 * panel_h)
     sx1 = px + int(x1 * panel_w)
     sy1 = py + int(y1 * panel_h)
-    d.rectangle([sx0, sy0, sx1, sy1], outline=TEMBAGA, width=3)
+    d.rectangle([sx0, sy0, sx1, sy1], outline=TEMBAGA, width=4)
 
     # Kalimat penjelas di bawah panel, dibungkus dua baris.
-    isi_font = ImageFont.truetype(FONT_BIASA, 21)
+    isi_font = ImageFont.truetype(FONT_BIASA, 26)
     kata = adegan["isi"].split()
     baris, sekarang = [], ""
     for k in kata:
         calon = (sekarang + " " + k).strip()
-        if d.textlength(calon, font=isi_font) > 1060:
+        if d.textlength(calon, font=isi_font) > panel_w:
             baris.append(sekarang)
             sekarang = k
         else:
             sekarang = calon
     baris.append(sekarang)
 
-    ty = py + panel_h + 26
+    ty = py + panel_h + 30
     for b in baris[:2]:
         d.text((px, ty), b, font=isi_font, fill=TINTA_2)
-        ty += 30
+        ty += 37
 
     # Penanda pembuat, satu baris, di kiri bawah.
-    d.text((px, H - 34), "From Sayba Arc", font=ImageFont.truetype(FONT_TEBAL, 16), fill=TEMBAGA)
+    d.text((px, H - 44), "From Sayba Arc", font=ImageFont.truetype(FONT_TEBAL, 20), fill=TEMBAGA)
 
     # Nomor adegan di kanan bawah.
     nomor = f"{ADEGAN.index(adegan) + 1:02d} / {len(ADEGAN):02d}"
-    dn = ImageFont.truetype(FONT_MONO, 15)
-    d.text((W - 98 - d.textlength(nomor, font=dn), H - 34), nomor, font=dn, fill=TINTA_2)
+    dn = ImageFont.truetype(FONT_MONO, 19)
+    d.text((W - px - d.textlength(nomor, font=dn), H - 44), nomor, font=dn, fill=TINTA_2)
 
     kanvas.save(keluar)
 
@@ -195,10 +214,10 @@ def main() -> None:
 
     im = Image.new("RGB", (W, H), LATAR)
     d = ImageDraw.Draw(im)
-    d.text((98, 250), "Satu aplikasi untuk semua berkas.", font=ImageFont.truetype(FONT_TEBAL, 46), fill=TINTA)
-    d.text((98, 320), "Semua mesin sudah terpasang sejak awal.", font=ImageFont.truetype(FONT_BIASA, 24), fill=TINTA_2)
-    d.text((98, 388), "Unduh di naovert.sayba.id", font=ImageFont.truetype(FONT_TEBAL, 24), fill=TEMBAGA)
-    d.text((98, H - 60), "From Sayba Arc", font=ImageFont.truetype(FONT_TEBAL, 16), fill=TEMBAGA)
+    d.text((PANEL_X, 400), "Satu aplikasi untuk semua berkas.", font=ImageFont.truetype(FONT_TEBAL, 58), fill=TINTA)
+    d.text((PANEL_X, 486), "Semua mesin sudah terpasang sejak awal.", font=ImageFont.truetype(FONT_BIASA, 30), fill=TINTA_2)
+    d.text((PANEL_X, 566), f"Unduh di {ALAMAT}", font=ImageFont.truetype(FONT_TEBAL, 30), fill=TEMBAGA)
+    d.text((PANEL_X, H - 76), "From Sayba Arc", font=ImageFont.truetype(FONT_TEBAL, 20), fill=TEMBAGA)
     im.save(tutup)
 
     klip_tutup = kerja / "tutup.mp4"
