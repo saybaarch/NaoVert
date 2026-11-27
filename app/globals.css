@@ -212,6 +212,26 @@
     box-shadow: none;
   }
 
+  /*
+   * Jaring kabut untuk peramban yang mengabaikan backdrop-filter.
+   *
+   * Pelajaran terukur dari studi GeoFold (paper.css: "OPAQUE, NOT GLASS"):
+   * bar 82% transparan + blur pernah gagal dibaca di mesin tanpa blur, teks
+   * halaman tembus ke bilah. Di sini blur hanya hiasan: saat ia tidak ada,
+   * wadahnya jadi padat penuh. Teks tetap terbaca di kedua keadaan.
+   */
+  @supports not (backdrop-filter: blur(10px)) {
+    .kapsul-nav,
+    .kapsul-padat,
+    .kapsul-menu {
+      background: var(--latar);
+    }
+    .kaca-3d {
+      background: var(--latar-panel);
+      border-color: var(--garis-2);
+    }
+  }
+
   /* Panel menu ponsel ikut kapsul, bukan kotak penuh. */
   .kapsul-menu {
     max-width: 976px;
@@ -283,7 +303,7 @@
   .kaca-3d {
     position: relative;
     border-radius: 14px;
-    background: color-mix(in srgb, var(--panel) 55%, transparent);
+    background: color-mix(in srgb, var(--latar-panel) 55%, transparent);
     border: 1px solid var(--garis);
     -webkit-backdrop-filter: blur(14px) saturate(1.15);
     backdrop-filter: blur(14px) saturate(1.15);
