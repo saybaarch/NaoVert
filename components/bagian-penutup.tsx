@@ -4,41 +4,40 @@ import Muncul from "@/components/muncul";
 import Ikon from "@/components/ikon";
 
 /**
- * Penutup.
+ * Penutup beranda.
  *
- * Satu ajakan saja, karena di titik ini orang sudah membaca semuanya. Tidak
- * ada kotak berbingkai, tidak ada daftar pengingat. Hanya judul besar dan dua
- * tombol, dengan ruang kosong yang lebar di sekelilingnya.
+ * Mengikuti penutup acuan: satu kartu putih besar di tengah, ikon unduh kecil,
+ * judul pendek, satu paragraf, lalu dua tombol. Tidak ada blok gelap; seluruh
+ * halaman memakai satu kanvas.
  */
 export default function BagianPenutup() {
   return (
-    <section className="pemisah">
-      <div className="wadah py-24 md:py-36">
-        <Muncul className="mx-auto max-w-3xl text-center">
-          <p className="label">{penutup.label}</p>
-          <h2 className="judul-besar mt-6">
-            {penutup.judul.map((baris, i) => (
-              <span key={baris} className={i === 0 ? "block" : "block text-tinta-3"}>
-                {baris}
-              </span>
-            ))}
-          </h2>
-          <p className="lead mx-auto mt-7 max-w-md">{penutup.isi}</p>
+    <section id="unduh" className="scroll-mt-24 pb-20 md:pb-28">
+      <div className="wadah">
+        <Muncul className="mx-auto max-w-4xl rounded-3xl border border-garis bg-panel px-6 py-14 text-center shadow-[var(--bayang-kartu)] md:px-16 md:py-18">
+          <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-garis bg-timbul text-tembaga">
+            <Ikon nama="unduh" ukuran={24} />
+          </span>
+          <h2 className="judul-bagian mx-auto mt-6 max-w-xl">{penutup.judul.join(" ")}</h2>
+          <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-tinta-2">
+            {penutup.isi}
+          </p>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/unduh" className="tombol">
-              <Ikon nama="unduh" ukuran={18} />
-              Unduh {situs.nama} {situs.versi}
+              <Ikon nama="unduh" ukuran={17} />
+              Unduh NaoVert
             </Link>
             <Link href="/panduan" className="tombol tombol-garis">
               Baca panduan
-              <Ikon nama="panah" ukuran={17} />
             </Link>
           </div>
 
-          <p className="mt-8 text-[12.5px] text-tinta-3">
-            {situs.sistem}. Gratis, tanpa akun, tanpa batas jumlah berkas.
-          </p>
+          <div className="mx-auto mt-9 flex max-w-xl flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-garis pt-6 font-mono text-[11px] text-tinta-3">
+            <span>{situs.sistem}</span>
+            <span>Paket mulai Rp15.000</span>
+            <span>Lisensi Sayba Arc Desktop Edition</span>
+          </div>
         </Muncul>
       </div>
     </section>

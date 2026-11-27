@@ -1,56 +1,50 @@
 import { langkah } from "@/lib/data";
 import KepalaBagian from "@/components/kepala-bagian";
 import Muncul from "@/components/muncul";
+import Ikon from "@/components/ikon";
 
-/**
- * Tiga langkah kerja.
- *
- * Ditulis sebagai daftar bernomor sungguhan, bukan tiga kartu sejajar. Langkah
- * itu berurutan, dan bentuknya harus terbaca berurutan juga: satu kolom tipis
- * dengan garis penghubung, angka di kiri, kalimat di kanan.
- *
- * Tidak memakai kotak berisi bayangan. Pemisahnya garis rambut, sama seperti
- * tabel dan daftar di halaman format.
- */
+const langkahTampil = [
+  ...langkah,
+  {
+    nomor: "04",
+    judul: "Berkas tetap di komputer",
+    isi: "Tidak ada unggahan dan tidak ada antrean server. Konversi berjalan lokal, termasuk ketika internet tidak tersedia.",
+  },
+];
+
 export default function BagianCara() {
   return (
     <section id="cara" className="pemisah scroll-mt-24">
-      <div className="wadah py-20 md:py-28">
+      <div className="wadah py-20 md:py-24">
         <KepalaBagian
-          nomor="03"
           label="Cara kerja"
           judul={
             <>
-              Tiga langkah,
+              Empat langkah sederhana,
               <br />
               <span className="text-tinta-3">tanpa pengaturan rumit.</span>
             </>
           }
-          penjelas="Tidak ada profil keluaran yang harus disusun lebih dulu, tidak ada folder keluaran yang harus ditentukan. Aplikasi mengikuti berkas yang Anda masukkan."
+          penjelas="Tarik berkas, pilih tujuan, lalu jalankan. NaoVert menangani mesin dan lokasi hasilnya tanpa membuat Anda mengatur profil konversi."
+          tengah
         />
 
-        <ol className="mt-12 max-w-3xl">
-          {langkah.map((l, i) => (
-            <Muncul
-              as="li"
-              key={l.nomor}
-              jeda={i * 70}
-              className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 border-t border-garis py-7 last:border-b"
-            >
-              <span className="mt-0.5 font-mono text-[12px] font-medium tracking-[0.1em] text-tembaga">
-                {l.nomor}
-              </span>
-              <div>
-                <h3 className="text-[17px] font-semibold tracking-[-0.02em] text-tinta">
-                  {l.judul}
-                </h3>
-                <p className="mt-2 text-[14.5px] leading-relaxed text-tinta-2">
-                  {l.isi}
-                </p>
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {langkahTampil.map((l, i) => (
+            <Muncul key={l.nomor} jeda={i * 50} className="kartu p-6">
+              <div className="flex items-center justify-between">
+                <span className="grid size-10 place-items-center rounded-xl bg-tinta text-[12px] font-bold text-latar">
+                  {l.nomor}
+                </span>
+                <span className="text-tinta-3">
+                  <Ikon nama={i === 3 ? "perisai" : "centang"} ukuran={17} />
+                </span>
               </div>
+              <h3 className="mt-6 text-[16px] font-semibold tracking-[-0.02em]">{l.judul}</h3>
+              <p className="mt-2.5 text-[13px] leading-relaxed text-tinta-2">{l.isi}</p>
             </Muncul>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );

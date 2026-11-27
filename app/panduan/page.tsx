@@ -28,8 +28,8 @@ const tanya = [
     j: `Tidak perlu. ${namaMesin.length} mesin sudah ikut terpasang bersama aplikasi. Tidak ada langkah tambahan setelah pemasangan selesai.`,
   },
   {
-    t: "Apakah perlu akun atau kunci lisensi?",
-    j: "Tidak. NaoVert gratis dan tidak meminta akun. Tidak ada kunci yang harus dimasukkan, dan tidak ada batas jumlah berkas.",
+    t: "Apakah NaoVert gratis?",
+    j: "NaoVert tersedia dalam paket lisensi bulanan seharga Rp15.000 dan paket tahunan promo seharga Rp150.000. Harga asli paket tahunan adalah Rp180.000.",
   },
 ];
 
@@ -49,30 +49,38 @@ export default function HalamanPanduan() {
       />
 
       <div className="wadah pb-24">
-        <ol className="grid gap-px overflow-hidden rounded-md border border-garis bg-garis md:grid-cols-3">
+        <ol className="grid gap-4 md:grid-cols-3">
           {langkah.map((l, i) => (
-            <Muncul key={l.nomor} jeda={i * 70} className="bg-latar p-7 md:p-8">
-              <span className="font-mono text-[12px] tracking-[0.1em] text-tembaga">{l.nomor}</span>
-              <h2 className="mt-4 text-[16.5px] font-semibold tracking-[-0.02em]">{l.judul}</h2>
-              <p className="mt-2.5 text-[13.5px] leading-relaxed text-tinta-3">{l.isi}</p>
+            <Muncul key={l.nomor} jeda={i * 60} className="kartu p-7 md:p-8">
+              <span className="grid size-10 place-items-center rounded-xl bg-tinta text-[12px] font-bold text-latar">
+                {l.nomor}
+              </span>
+              <h2 className="mt-6 text-[17px] font-semibold tracking-[-0.02em]">{l.judul}</h2>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed text-tinta-2">{l.isi}</p>
             </Muncul>
           ))}
         </ol>
 
-        <section className="mt-20">
-          <p className="label">Pertanyaan yang sering muncul</p>
-          <div className="mt-5 border-t border-garis">
+        <section className="mx-auto mt-20 max-w-3xl">
+          <div className="text-center">
+            <p className="label">Pertanyaan yang sering muncul</p>
+            <h2 className="judul-bagian mt-3">Sebelum mulai memakai.</h2>
+          </div>
+          <div className="mt-8 space-y-3">
             {tanya.map((q) => (
-              <details key={q.t} className="group border-b border-garis">
-                <summary className="flex cursor-pointer list-none items-center gap-4 py-5 transition-colors hover:bg-timbul">
-                  <span className="flex-1 text-[15.5px] font-medium tracking-[-0.015em] text-tinta">
+              <details
+                key={q.t}
+                className="group rounded-2xl border border-garis bg-panel px-5 shadow-[var(--bayang-kartu)] md:px-6"
+              >
+                <summary className="flex min-h-14 cursor-pointer list-none items-center gap-4 py-4">
+                  <span className="flex-1 text-[14.5px] font-semibold tracking-[-0.01em] text-tinta">
                     {q.t}
                   </span>
-                  <span className="shrink-0 text-tinta-3 transition-transform group-open:rotate-45">
-                    <Ikon nama="tutup" ukuran={16} />
+                  <span className="shrink-0 text-tinta-3 transition-transform group-open:rotate-180">
+                    <Ikon nama="panah" ukuran={16} className="rotate-90" />
                   </span>
                 </summary>
-                <p className="max-w-2xl pb-6 pr-8 text-[14px] leading-relaxed text-tinta-2">
+                <p className="max-w-2xl pb-5 pr-8 text-[13.5px] leading-relaxed text-tinta-2">
                   {q.j}
                 </p>
               </details>

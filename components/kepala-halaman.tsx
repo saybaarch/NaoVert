@@ -21,13 +21,13 @@ export default function KepalaHalaman({
   children?: ReactNode;
 }) {
   return (
-    <section className="pt-32 pb-12 md:pt-40 md:pb-16">
+    <section className="pt-14 pb-12 md:pt-20 md:pb-16">
       <div className="wadah">
-        <Muncul>
-          <p className="label">{label}</p>
-          <h1 className="judul-bagian mt-4 max-w-3xl">{judul}</h1>
-          {penjelas && <p className="lead mt-5">{penjelas}</p>}
-          {children && <div className="mt-8">{children}</div>}
+        <Muncul className="mx-auto max-w-3xl text-center">
+          <span className="chip mx-auto w-fit">{label}</span>
+          <h1 className="judul-bagian mt-6">{judul}</h1>
+          {penjelas && <p className="lead mx-auto mt-5">{penjelas}</p>}
+          {children && <div className="mt-8 flex flex-wrap justify-center gap-3">{children}</div>}
         </Muncul>
       </div>
     </section>

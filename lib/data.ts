@@ -40,9 +40,9 @@ export const situs = {
 /* ── navigasi ──────────────────────────────────────────────────────────── */
 
 export const navigasi = [
-  { label: "Kategori", href: "/#kemampuan" },
-  { label: "Cara kerja", href: "/#cara" },
+  { label: "Fitur", href: "/fitur" },
   { label: "Format", href: "/format" },
+  { label: "Harga", href: "/harga" },
   { label: "Panduan", href: "/panduan" },
 ] as const;
 

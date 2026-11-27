@@ -7,7 +7,7 @@ import { situs } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Unduh",
-  description: `Unduh NaoVert ${situs.versi} untuk Windows 10 dan 11, 64 bit. Gratis, tanpa akun.`,
+  description: `Unduh NaoVert ${situs.versi} untuk Windows 10 dan 11, 64 bit. Pilih paket lisensi bulanan atau tahunan.`,
 };
 
 const isi = [
@@ -43,7 +43,7 @@ export default function HalamanUnduh() {
             <span className="text-tinta-3">langsung bekerja.</span>
           </>
         }
-        penjelas={`NaoVert ${situs.versi} untuk ${situs.sistem}. Gratis, tanpa akun, dan tanpa batas jumlah berkas.`}
+        penjelas={`NaoVert ${situs.versi} untuk ${situs.sistem}. Tersedia dalam paket bulanan dan tahunan, dengan konversi lokal tanpa batas jumlah berkas.`}
       >
         <div className="flex flex-wrap gap-3">
           {/* Berkas pemasang belum dipublikasikan, jadi tombolnya sengaja
@@ -53,24 +53,24 @@ export default function HalamanUnduh() {
             <Ikon nama="unduh" ukuran={18} />
             Unduh pemasang
           </button>
-          <Link href="/panduan" className="tombol tombol-garis">
-            Baca panduan pemasangan
+          <Link href="/harga" className="tombol tombol-garis">
+            Lihat paket lisensi
             <Ikon nama="panah" ukuran={17} />
           </Link>
         </div>
       </KepalaHalaman>
 
       <div className="wadah pb-24">
-        <p className="mb-10 rounded-md border border-tembaga/25 bg-tembaga/[0.06] px-5 py-4 text-[13px] leading-relaxed text-tinta-2">
+        <p className="mb-10 rounded-2xl border border-tembaga/30 bg-sorot px-5 py-4 text-[13px] leading-relaxed text-tinta-2">
           <b className="text-tinta">Berkas pemasang belum tersedia.</b> Situs ini
-          sedang disusun ulang, dan tombol unduh akan aktif begitu berkas rilis
-          pertama dipublikasikan.
+          sedang disusun ulang. Tombol unduh akan aktif setelah berkas rilis
+          pertama dan alur aktivasi paket dipublikasikan.
         </p>
-        <div className="grid gap-px overflow-hidden rounded-md border border-garis bg-garis md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {isi.map((b, i) => (
-            <Muncul key={b.judul} jeda={i * 70} className="bg-latar p-7 md:p-8">
-              <h2 className="text-[15.5px] font-semibold tracking-[-0.015em]">{b.judul}</h2>
-              <p className="mt-2.5 text-[13.5px] leading-relaxed text-tinta-3">{b.isi}</p>
+            <Muncul key={b.judul} jeda={i * 60} className="kartu p-7 md:p-8">
+              <h2 className="text-[16px] font-semibold tracking-[-0.015em]">{b.judul}</h2>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed text-tinta-2">{b.isi}</p>
             </Muncul>
           ))}
         </div>
@@ -80,7 +80,7 @@ export default function HalamanUnduh() {
           <ol className="mt-5 border-t border-garis">
             {langkahPasang.map((l, i) => (
               <li key={l} className="flex gap-5 border-b border-garis py-5">
-                <span className="w-6 shrink-0 font-mono text-[11.5px] text-tinta-3">
+                <span className="w-6 shrink-0 font-mono text-[11.5px] text-tembaga">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <p className="text-[14.5px] leading-relaxed text-tinta-2">{l}</p>

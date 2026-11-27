@@ -1,33 +1,28 @@
 import Hero from "@/components/hero";
 import PitaAngka from "@/components/pita-angka";
-import PitaFormat from "@/components/pita-format";
-import BagianBab from "@/components/bagian-bab";
-import BagianVideo from "@/components/bagian-video";
-import BagianKategori from "@/components/bagian-kategori";
-import BagianCara from "@/components/bagian-cara";
-import BagianKlikKanan from "@/components/bagian-klik-kanan";
-import BagianGaleri from "@/components/bagian-galeri";
+import BagianManfaat from "@/components/bagian-manfaat";
+import BagianHarga from "@/components/bagian-harga";
+import BagianPrivasi from "@/components/bagian-privasi";
+import BagianInspirasi from "@/components/bagian-inspirasi";
 import BagianPenutup from "@/components/bagian-penutup";
 
 /**
  * Beranda.
  *
- * Urutannya sengaja seperti alur membaca: apa ini, seberapa luas, seperti apa
- * kerjanya, lalu di mana mengunduhnya. Bagian yang paling akhir justru yang
- * paling penting bagi orang yang sudah yakin.
+ * Urutannya mengikuti acuan ikhtisar: pengantar dan panggung aplikasi yang
+ * dipin (satu komponen, scroll menerus), deretan angka, manfaat yang bisa
+ * digeser, harga ringkas, keamanan, inspirasi, lalu penutup. Isi yang lebih
+ * dalam tinggal di halaman Fitur, Format, Panduan, dan Harga.
  */
 export default function Beranda() {
   return (
     <>
       <Hero />
       <PitaAngka />
-      <PitaFormat />
-      <BagianBab />
-      <BagianVideo />
-      <BagianKategori />
-      <BagianCara />
-      <BagianKlikKanan />
-      <BagianGaleri />
+      <BagianManfaat />
+      <BagianHarga />
+      <BagianPrivasi />
+      <BagianInspirasi />
       <BagianPenutup />
     </>
   );

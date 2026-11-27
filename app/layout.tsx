@@ -1,38 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import KemajuanBaca from "@/components/kemajuan-baca";
 import { situs } from "@/lib/data";
 import "./globals.css";
 
-/*
- * Tiga huruf, tiga tugas, tidak ada yang dipakai di luar tugasnya.
- *
- * Instrument Sans untuk seluruh teks antar muka. Bentuknya netral tetapi
- * ujung hurufnya tegas, dan tidak semeriah huruf antar muka bawaan.
- *
- * Instrument Serif hanya untuk judul besar. Alasannya bukan hiasan: perkakas
- * teknis biasanya tampil serba sans dan monospace, jadi serif yang dipakai
- * hemat membuat judul terbaca sebagai pernyataan, bukan sebagai label. Huruf
- * ini juga sekerabat dengan sans di atas, jadi keduanya tidak bertengkar.
- *
- * JetBrains Mono untuk angka, ekstensi berkas, dan nama mesin. Bukan untuk
- * kesan terminal, melainkan karena angka dan ekstensi di halaman ini sering
- * dibandingkan dan harus sejajar rapi.
- */
-const aksi = Instrument_Sans({
+const aksi = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-aksi",
   display: "swap",
-});
-
-const judul = Instrument_Serif({
-  subsets: ["latin"],
-  variable: "--font-judul",
-  display: "swap",
-  weight: "400",
-  style: ["normal", "italic"],
 });
 
 const angka = JetBrains_Mono({
@@ -47,10 +23,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#16181b" },
-    { media: "(prefers-color-scheme: light)", color: "#f2efe9" },
-  ],
+  themeColor: "#1b1d20",
 };
 
 export const metadata: Metadata = {
@@ -99,22 +72,17 @@ export const metadata: Metadata = {
 };
 
 /*
- * Skrip tema. Dijalankan sebelum halaman dilukis supaya pilihan terang tidak
- * berkedip menjadi gelap lebih dulu. Isinya dibaca dari localStorage, dengan
- * cadangan pada pengaturan sistem.
+ * Situs memakai satu tema gelap. Skrip tema dan tombol ganti tema sudah
+ * dihapus; pilihan gelap dipatok lewat atribut data-tema di elemen html.
  */
-const skripTema = `(function(){try{var t=localStorage.getItem("naovert-tema");if(!t){t=window.matchMedia("(prefers-color-scheme: light)").matches?"terang":"gelap"}if(t==="terang"){document.documentElement.dataset.tema="terang"}}catch(e){}})();`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="id"
-      className={`${aksi.variable} ${judul.variable} ${angka.variable}`}
+      data-tema="gelap"
+      className={`${aksi.variable} ${angka.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: skripTema }} />
-      </head>
       <body className="min-h-dvh antialiased">
         <a
           href="#utama"
@@ -122,7 +90,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Lompat ke isi utama
         </a>
-        <KemajuanBaca />
         <Header />
         <main id="utama">{children}</main>
         <Footer />

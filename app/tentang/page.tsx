@@ -55,7 +55,7 @@ export default function HalamanTentang() {
               </p>
             </div>
 
-            <div className="mt-10 rounded-md border border-garis bg-panel p-6">
+            <div className="kartu mt-10 p-6">
               <p className="label">Mesin yang ikut terpasang</p>
               <p className="mt-3 font-mono text-[12.5px] leading-relaxed text-tinta-2">
                 {namaMesin.join(" · ")}
@@ -67,9 +67,9 @@ export default function HalamanTentang() {
             </div>
           </Muncul>
 
-          <div className="grid gap-px self-start overflow-hidden rounded-md border border-garis bg-garis">
+          <div className="grid gap-4 self-start">
             {kemampuan.map((k, i) => (
-              <Muncul key={k.judul} jeda={i * 45} className="bg-latar p-6">
+              <Muncul key={k.judul} jeda={i * 45} className="kartu p-6">
                 <span className="text-tinta-3">
                   <Ikon nama={k.ikon} ukuran={20} />
                 </span>

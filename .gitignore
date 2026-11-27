@@ -1,6 +1,8 @@
 # Berkas rahasia. Jangan pernah masuk repositori.
 admin.txt
 gobiz.txt
+.gobiz-session.json
+.qris-test.json
 github & supabase token.txt
 github & supabase token & Vercel.txt
 *.pfx
@@ -41,3 +43,6 @@ Thumbs.db
 .env*
 # berkas contoh tetap ikut walau pola di atas menutupi semuanya
 !.env.example
+
+# Pesanan QRIS publik (berisi payload dan token transaksi).
+.pesanan.json

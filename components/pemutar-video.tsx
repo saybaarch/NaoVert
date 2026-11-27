@@ -10,9 +10,6 @@ import Ikon from "@/components/ikon";
  * Video tidak diunduh sebelum ditekan. Yang tampil lebih dulu hanya poster,
  * jadi 3,2 MB tidak ikut terkirim ke setiap orang yang membuka beranda dan
  * tidak jadi menonton.
- *
- * Sudutnya mengikuti aplikasi (6px), bukan bulat penuh. Tombol putarnya pun
- * kotak bersudut, supaya bentuknya satu bahasa dengan tombol lain di situs.
  */
 export default function PemutarVideo() {
   const [putar, setPutar] = useState(false);
@@ -31,7 +28,7 @@ export default function PemutarVideo() {
 
   return (
     <figure className="m-0">
-      <div className="relative overflow-hidden rounded-md border border-garis bg-panel">
+      <div className="relative overflow-hidden rounded-2xl border border-garis bg-panel shadow-[var(--bayang-kartu)]">
         <div className="relative aspect-video">
           <video
             ref={video}
@@ -55,7 +52,7 @@ export default function PemutarVideo() {
               className="group absolute inset-0 grid place-items-center bg-latar/25 transition-colors hover:bg-latar/10"
               aria-label="Putar video panduan pemakaian NaoVert"
             >
-              <span className="flex items-center gap-2.5 rounded-md border border-garis-2 bg-tinta px-4 py-2.5 text-[13.5px] font-semibold text-latar transition-transform group-hover:scale-[1.02]">
+              <span className="flex items-center gap-2.5 rounded-full border border-garis-2 bg-tinta px-4 py-2.5 text-[13.5px] font-semibold text-latar transition-transform group-hover:scale-[1.02]">
                 <Ikon nama="main" ukuran={15} />
                 Putar panduan
               </span>

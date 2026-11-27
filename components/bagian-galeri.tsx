@@ -4,23 +4,6 @@ import KepalaBagian from "@/components/kepala-bagian";
 import Muncul from "@/components/muncul";
 import MiringKursor from "@/components/miring-kursor";
 
-/**
- * Galeri tampilan.
- *
- * Empat tangkapan dari aplikasi yang sedang dipakai: jendela utama, dialog
- * gabung, pengaturan, dan tema terang. Semuanya diambil ulang dari
- * `src/renderer/index.html` aplikasi, bukan dari aset lama.
- *
- * Bingkainya memakai bilah tipis di atas supaya terbaca sebagai jendela
- * aplikasi, bukan gambar lepas. Sudutnya 6px, sama dengan sudut jendela
- * aplikasi yang sesungguhnya.
- *
- * Di ponsel susunannya jadi carousel geser (scroll-snap), bukan kolom yang
- * ditumpuk panjang. Alasannya: tangkapan layar hanya terbaca kalau lebarnya
- * penuh, dan empat gambar penuh di ponsel berarti gulir vertikal yang melelah.
- * Scroll-snap murni CSS: nol JavaScript, nol pustaka, jadi tidak menambah
- * berat halaman. Di layar lebar tetap kisi dua kolom seperti sebelumnya.
- */
 const gambar = [
   {
     src: tangkapan.berkas,
@@ -50,10 +33,9 @@ const gambar = [
 
 export default function BagianGaleri() {
   return (
-    <section className="pemisah">
-      <div className="wadah py-20 md:py-28">
+    <section id="tampilan" className="pemisah scroll-mt-24">
+      <div className="wadah py-20 md:py-24">
         <KepalaBagian
-          nomor="04"
           label="Tampilan"
           judul={
             <>
@@ -63,13 +45,14 @@ export default function BagianGaleri() {
             </>
           }
           penjelas="Tangkapan di bawah diambil dari aplikasi versi terbaru, bukan gambar rancangan dan bukan aset lama."
+          tengah
         />
 
         <div className="geser-kejutan mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0">
           {gambar.map((g, i) => (
             <Muncul
               key={g.judul}
-              jeda={i * 60}
+              jeda={i * 50}
               className={
                 i === 0
                   ? "w-[86vw] shrink-0 snap-center md:col-span-2 md:w-auto"
@@ -78,9 +61,9 @@ export default function BagianGaleri() {
             >
               <figure className="m-0">
                 <MiringKursor>
-                  <div className="overflow-hidden rounded-md border border-garis bg-panel">
+                  <div className="overflow-hidden rounded-2xl border border-garis bg-panel shadow-[var(--bayang-kartu)]">
                     <div
-                      className="flex items-center gap-1.5 border-b border-garis px-3 py-2"
+                      className="flex items-center gap-1.5 border-b border-garis bg-timbul/60 px-3 py-2"
                       aria-hidden="true"
                     >
                       <i className="size-1.5 rounded-full bg-tinta-3/35" />

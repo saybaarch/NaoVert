@@ -92,7 +92,7 @@ function DaftarEkstensi({
 function KartuLebar({ k }: { k: Keluarga }) {
   const [buka, setBuka] = useState(false);
   return (
-    <article className="panel relative overflow-hidden rounded-md p-5 md:p-7">
+    <article className="kartu relative overflow-hidden p-5 md:p-7">
       <div className="grid gap-6 md:grid-cols-[1.15fr_1fr] md:gap-10">
         <div>
           <p className="mb-3 flex items-center gap-2 text-tinta-3">
@@ -153,7 +153,7 @@ function KartuLebar({ k }: { k: Keluarga }) {
 function KartuSedang({ k }: { k: Keluarga }) {
   const [buka, setBuka] = useState(false);
   return (
-    <article className="panel flex h-full w-full flex-col rounded-md p-5 md:p-6">
+    <article className="kartu flex h-full w-full flex-col p-5 md:p-6">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="text-[21px] font-semibold leading-tight tracking-[-0.03em]">{k.judul}</h3>
         <span className="shrink-0 font-mono text-[11px] text-tinta-3">{k.mesin}</span>
@@ -262,7 +262,7 @@ export default function PencariFormat() {
 
   return (
     <div>
-      <div className="sticky top-[76px] z-20 -mx-1 mb-9 bg-latar/88 px-1 py-3 backdrop-blur-xl">
+      <div className="sticky top-[76px] z-20 -mx-1 mb-9 bg-latar px-1 py-3">
         <div className="relative">
           <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-tinta-3">
             <Ikon nama="panah" ukuran={16} />
@@ -273,7 +273,7 @@ export default function PencariFormat() {
             onChange={(e) => setKata(e.target.value)}
             placeholder="Ketik nama format, misalnya pdf, heic, atau docx"
             aria-label="Cari format"
-            className="h-12 w-full rounded-md border border-garis-2 bg-panel pl-11 pr-4 text-[14.5px] text-tinta placeholder:text-tinta-3 focus:border-tinta-3 focus:outline-none"
+            className="h-12 w-full rounded-lg border border-garis-2 bg-panel pl-11 pr-4 text-[14.5px] text-tinta placeholder:text-tinta-3 focus:border-tembaga focus:outline-none"
           />
         </div>
         <p className="mt-2.5 pl-1 text-[12px] text-tinta-3" aria-live="polite">
@@ -284,7 +284,7 @@ export default function PencariFormat() {
       </div>
 
       {hasil && hasil.length === 0 && (
-        <p className="rounded-md border border-garis px-5 py-6 text-[14px] text-tinta-3">
+        <p className="kartu px-5 py-6 text-[14px] text-tinta-3">
           Tidak ada format yang cocok. Coba kata lain, misalnya bagian dari nama berkas
           seperti <span className="font-mono text-tinta-2">svg</span> atau{" "}
           <span className="font-mono text-tinta-2">xlsx</span>.

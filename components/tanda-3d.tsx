@@ -349,9 +349,6 @@ export default function Tanda3D({
     };
     bacaWarna();
 
-    const pengamat = new MutationObserver(bacaWarna);
-    pengamat.observe(document.documentElement, { attributes: true, attributeFilter: ["data-tema"] });
-
     /* ukuran kanvas: mengikuti lebar wadah, jadi ikut responsif */
     const aturUkuran = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -504,7 +501,6 @@ export default function Tanda3D({
 
     return () => {
       hidup = false;
-      pengamat.disconnect();
       io.disconnect();
       ro.disconnect();
       kanvas.removeEventListener("pointerdown", onDown);

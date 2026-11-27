@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { tangkapan } from "@/lib/data";
 import KepalaBagian from "@/components/kepala-bagian";
 import Muncul from "@/components/muncul";
@@ -19,21 +20,14 @@ const butir = [
   },
 ];
 
-/**
- * Bagian menu klik kanan.
- *
- * Satu setengah lebar untuk gambar, karena tangkapan layar panel pengaturan
- * butuh ruang supaya sakelarnya masih terbaca. Teksnya di kiri agar mata
- * berhenti dulu pada penjelasan sebelum melihat gambar.
- */
 export default function BagianKlikKanan() {
   return (
-    <section className="pemisah">
-      <div className="wadah py-20 md:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+    <section id="klik-kanan" className="pemisah scroll-mt-24">
+      <div className="wadah py-20 md:py-24">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>
             <p className="label">Di File Explorer</p>
-            <h2 className="judul-bagian mt-4">
+            <h2 className="judul-bagian mt-3">
               Klik kanan berkas,
               <br />
               <span className="text-tinta-3">pilih format, selesai.</span>
@@ -50,22 +44,27 @@ export default function BagianKlikKanan() {
                   <span className="mt-0.5 shrink-0 text-tembaga">
                     <Ikon nama="centang" ukuran={17} />
                   </span>
-                  <p className="text-[14px] leading-relaxed text-tinta-2">
+                  <p className="text-[13.5px] leading-relaxed text-tinta-2">
                     <b className="font-semibold text-tinta">{b.tebal}</b> {b.isi}
                   </p>
                 </li>
               ))}
             </ul>
+
+            <Link href="/panduan" className="tombol tombol-garis mt-8">
+              Lihat panduan
+              <Ikon nama="panah" ukuran={16} />
+            </Link>
           </div>
 
-          <Muncul className="overflow-hidden rounded-md border border-garis bg-panel">
-            <div className="flex items-center gap-2 border-b border-garis px-4 py-2.5">
+          <Muncul className="overflow-hidden rounded-2xl border border-garis bg-panel shadow-[var(--bayang-timbul)]">
+            <div className="flex items-center gap-2 border-b border-garis bg-timbul/60 px-4 py-2.5">
               <span className="flex gap-1.5" aria-hidden="true">
                 <i className="size-2 rounded-full bg-tinta-3/30" />
                 <i className="size-2 rounded-full bg-tinta-3/30" />
                 <i className="size-2 rounded-full bg-tinta-3/30" />
               </span>
-              <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-tinta-3">
+              <span className="ml-2 text-[11px] font-semibold text-tinta-2">
                 Pengaturan integrasi Windows
               </span>
             </div>
