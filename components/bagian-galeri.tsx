@@ -14,6 +14,12 @@ import MiringKursor from "@/components/miring-kursor";
  * Bingkainya memakai bilah tipis di atas supaya terbaca sebagai jendela
  * aplikasi, bukan gambar lepas. Sudutnya 6px, sama dengan sudut jendela
  * aplikasi yang sesungguhnya.
+ *
+ * Di ponsel susunannya jadi carousel geser (scroll-snap), bukan kolom yang
+ * ditumpuk panjang. Alasannya: tangkapan layar hanya terbaca kalau lebarnya
+ * penuh, dan empat gambar penuh di ponsel berarti gulir vertikal yang melelah.
+ * Scroll-snap murni CSS: nol JavaScript, nol pustaka, jadi tidak menambah
+ * berat halaman. Di layar lebar tetap kisi dua kolom seperti sebelumnya.
  */
 const gambar = [
   {
@@ -59,12 +65,16 @@ export default function BagianGaleri() {
           penjelas="Tangkapan di bawah diambil dari aplikasi versi terbaru, bukan gambar rancangan dan bukan aset lama."
         />
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <div className="geser-kejutan mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0">
           {gambar.map((g, i) => (
             <Muncul
               key={g.judul}
               jeda={i * 60}
-              className={i === 0 ? "md:col-span-2" : undefined}
+              className={
+                i === 0
+                  ? "w-[86vw] shrink-0 snap-center md:col-span-2 md:w-auto"
+                  : "w-[86vw] shrink-0 snap-center md:w-auto"
+              }
             >
               <figure className="m-0">
                 <MiringKursor>
@@ -84,8 +94,8 @@ export default function BagianGaleri() {
                       height={1560}
                       sizes={
                         i === 0
-                          ? "(max-width: 768px) 100vw, 1120px"
-                          : "(max-width: 768px) 100vw, 550px"
+                          ? "(max-width: 767px) 86vw, 1120px"
+                          : "(max-width: 767px) 86vw, 550px"
                       }
                       className="h-auto w-full"
                     />

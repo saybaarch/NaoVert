@@ -6,19 +6,26 @@ import { Tanda } from "@/components/ikon";
 /**
  * Tanda NaoVert sebagai benda tiga dimensi.
  *
- * Kenapa tiga dimensi, bukan gambar biasa: tanda ini dua batang yang bertemu
- * di satu simpul. Dimensi ketiga membuat kedalaman tembaga di titik temu
- * terlihat sebagai hasil pertemuan, bukan sebagai tempelan. Itu satu-satunya
- * alasan aset 3D ada di sini.
+ * Bentuknya meniru logo ASLI aplikasi (public/img/logo-asli.png), bukan tanda
+ * yang dirancang ulang. Titik-titiknya diukur dari piksel berkas aslinya: dua
+ * batang tebal yang bertemu di bawah, batang kiri krem, batang kanan tembaga,
+ * masing masing miring sekitar 14 derajat dari tegak dengan ujung atas membulat.
  *
- * Tidak memakai pustaka 3D. Adegannya satu benda dengan satu lampu, dan
- * menarik tiga.js sebesar ratusan kilobita untuk itu akan membebani halaman
- * tanpa manfaat. Seluruh mesin gambar di bawah ini ditulis langsung dengan
- * WebGL, jadi beratnya hanya beberapa kilobita.
+ * Kenapa tiga dimensi, bukan gambar biasa: logo asli punya dua warna pada dua
+ * batang. Dimensi ketiga membuat pertemuan keduanya terbaca sebagai hasil
+ * kedalaman, bukan tempelan warna. Itu satu-satunya alasan aset 3D ada di sini.
+ *
+ * Tidak memakai pustaka 3D. Adegannya dua benda dengan satu lampu; menarik
+ * tiga.js sebesar ratusan kilobita untuk itu akan membebani halaman. Seluruh
+ * mesin gambar ditulis langsung dengan WebGL, beratnya beberapa kilobita.
  *
  * Perilakunya dijaga:
+ *   - responsive: kanvas mengikuti lebar wadahnya, bukan angka piksel tetap
+ *   - bisa digerakkan: diseret (mouse, sentuh, pen) atau tombol panah, dengan
+ *     kelambatan halus setelah dilepas
  *   - berhenti menggambar saat tidak terlihat di layar
- *   - berhenti total bila pengguna memilih mengurangi gerakan
+ *   - berhenti ayun otomatis bila pengguna memilih mengurangi gerakan, tetap
+ *     bisa diputar manual
  *   - ukuran piksel dibatasi 2x supaya tidak membebani layar beresolusi tinggi
  *   - bila WebGL tidak tersedia, tanda dua dimensi ditampilkan, bukan kotak kosong
  */
@@ -159,8 +166,8 @@ function balok(w: number, h: number, d: number) {
   return { pos, nor, idx };
 }
 
-/** Bola bersegmen rendah, cukup untuk simpul tembaga. */
-function bola(r: number, segmen = 20, cincin = 14) {
+/** Bola bersegmen rendah, cukup untuk tutup bulat di ujung batang. */
+function bola(r: number, segmen = 18, cincin = 12) {
   const pos: number[] = [], nor: number[] = [], idx: number[] = [];
   for (let i = 0; i <= cincin; i++) {
     const v = (i / cincin) * Math.PI;
@@ -184,31 +191,51 @@ function bola(r: number, segmen = 20, cincin = 14) {
 }
 
 /*
- * Geometri tanda, memakai koordinat yang sama dengan components/ikon.tsx
- * (kanvas 32x32), lalu dipusatkan dan dibalik sumbu Y karena WebGL
- * menganggap atas sebagai +1.
+ * Geometri diambil dari berkas logo asli, bukan dari dugaan. Titik-titiknya
+ * diukur dari piksel public/img/logo-asli.png: kanvas 256px, kedua batang
+ * membentang dari y=40 ke y=218, pusat kanvas (128,129). Sumbu Y dibalik
+ * karena WebGL menganggap atas sebagai +1, lalu dibagi 90 supaya tanda muat
+ * nyaman dalam ruang kamera.
  */
-const PUSAT = { x: 16.35, y: 16.9 };
-const SKALA = 1 / 14.4;
+const PUSAT = { x: 128, y: 129 };
+const SKALA = 1 / 90;
 
 function keDunia(x: number, y: number) {
   return [(x - PUSAT.x) * SKALA, -(y - PUSAT.y) * SKALA] as const;
 }
 
-const SIMPUL = { x: 16, y: 25.6 };
-const BATANG = [
-  { atas: { x: 5.9, y: 6.2 }, lebar: 3.8 },
-  { atas: { x: 26.1, y: 5.2 }, lebar: 5.1 },
+type Batang = {
+  /** Ujung atas dan bawah dalam koordinat kanvas 256px logo asli. */
+  atas: readonly [number, number];
+  bawah: readonly [number, number];
+  /** Lebar batang hasil ukur piksel (51px pada kanvas 256). */
+  lebar: number;
+  /** 0 = batang kiri krem, 1 = batang kanan tembaga. */
+  aksen: number;
+};
+
+const BATANG: Batang[] = [
+  { atas: [73.5, 40], bawah: [118, 218], lebar: 51, aksen: 0 },
+  { atas: [181.5, 40], bawah: [137, 218], lebar: 51, aksen: 1 },
 ];
-const JARI_SIMPUL = 3.0;
-const TEBAL = 0.62;
+const TEBAL = 0.42;   // ketebalan ke arah kamera; logo asli pipih, ini cukup
 
 /* ── komponen ──────────────────────────────────────────────────────────── */
 
-export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
+export default function Tanda3D({
+  kelas,
+}: {
+  /** Kelas pembungkus; wadahnya menentukan ukuran kanvas, jadi ikut responsif. */
+  kelas?: string;
+}) {
   const kanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [siap, setSiap] = useState(false);
   const [gagal, setGagal] = useState(false);
+
+  // Sudut tambahan hasil seretan disimpan di ref supaya tidak memicu render
+  // ulang React; animasi membacanya langsung tiap bingkai.
+  const gerak = useRef({ yaw: 0, pitch: 0, lajuYaw: 0, lajuPitch: 0 });
+  const seret = useRef<{ id: number; x: number; y: number } | null>(null);
 
   useEffect(() => {
     const kanvas = kanvasRef.current;
@@ -260,7 +287,11 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
     };
     const benda: Benda[] = [];
 
-    const tambah = (bentuk: { pos: number[]; nor: number[]; idx: number[] }, model: Mat4, aksen: number) => {
+    const tambah = (
+      bentuk: { pos: number[]; nor: number[]; idx: number[] },
+      model: Mat4,
+      aksen: number,
+    ) => {
       const vb = gl.createBuffer()!;
       gl.bindBuffer(gl.ARRAY_BUFFER, vb);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bentuk.pos), gl.STATIC_DRAW);
@@ -276,34 +307,28 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
       benda.push({ buf: vb, nor: nb, indeks: ib, jumlah: bentuk.idx.length, model, aksen });
     };
 
-    // Dua batang.
-    const simpul = keDunia(SIMPUL.x, SIMPUL.y);
-    for (const b of BATANG) {
-      const atas = keDunia(b.atas.x, b.atas.y);
-      const dx = atas[0] - simpul[0];
-      const dy = atas[1] - simpul[1];
+    // Satu batang: balok memanjang antara dua ujung, plus bola kecil di
+    // ujung atas sebagai tutup bulat, meniru lengkung ujung pada berkas asli.
+    const tambahBatang = (b: Batang) => {
+      const atas = keDunia(b.atas[0], b.atas[1]);
+      const bawah = keDunia(b.bawah[0], b.bawah[1]);
+      const dx = atas[0] - bawah[0];
+      const dy = atas[1] - bawah[1];
       const panjang = Math.hypot(dx, dy);
       const ux = dx / panjang, uy = dy / panjang;
 
-      // Balok memanjang di sumbu Y, lalu diputar agar menunjuk ke titik atas.
       const sudut = Math.atan2(-ux, uy);
-      const tengahX = (atas[0] + simpul[0]) / 2;
-      const tengahY = (atas[1] + simpul[1]) / 2;
+      const tengahX = (atas[0] + bawah[0]) / 2;
+      const tengahY = (atas[1] + bawah[1]) / 2;
 
       const model = kalikan(geser(tengahX, tengahY, 0), putarZ(sudut));
-      tambah(
-        balok(b.lebar * SKALA, panjang, TEBAL),
-        model,
-        0,
-      );
-    }
+      tambah(balok(b.lebar * SKALA, panjang - b.lebar * SKALA * 0.5, TEBAL), model, b.aksen);
 
-    // Simpul tembaga. Sedikit lebih tebal dari batang supaya menonjol.
-    tambah(
-      bola(JARI_SIMPUL * SKALA, 24, 16),
-      geser(simpul[0], simpul[1], 0),
-      1,
-    );
+      // Tutup bulat di ujung atas; setengahnya tenggelam ke dalam balok.
+      tambah(bola((b.lebar / 2) * SKALA * 0.98), geser(atas[0], atas[1], 0), b.aksen);
+    };
+
+    for (const b of BATANG) tambahBatang(b);
 
     /* warna dari tema, dibaca ulang saat tema berganti */
     const bacaWarna = () => {
@@ -327,12 +352,16 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
     const pengamat = new MutationObserver(bacaWarna);
     pengamat.observe(document.documentElement, { attributes: true, attributeFilter: ["data-tema"] });
 
-    /* ukuran kanvas */
+    /* ukuran kanvas: mengikuti lebar wadah, jadi ikut responsif */
     const aturUkuran = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const sisi = kanvas.clientWidth || ukuran;
-      kanvas.width = Math.round(sisi * dpr);
-      kanvas.height = Math.round(sisi * dpr);
+      const sisi = kanvas.clientWidth;
+      if (sisi === 0) return;
+      const p = Math.round(sisi * dpr);
+      if (kanvas.width !== p || kanvas.height !== p) {
+        kanvas.width = p;
+        kanvas.height = p;
+      }
       gl.viewport(0, 0, kanvas.width, kanvas.height);
     };
     aturUkuran();
@@ -348,18 +377,30 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
       gl.enable(gl.DEPTH_TEST);
       gl.enable(gl.CULL_FACE);
 
+      const g = gerak.current;
+
+      // Seretan dilepas: sisa laju dipakai pelan-pelan (kelambatan).
+      if (!seret.current) {
+        g.yaw += g.lajuYaw;
+        g.pitch += g.lajuPitch;
+        g.lajuYaw *= 0.94;
+        g.lajuPitch *= 0.94;
+        // Setelah laju habis, posisi pelan pelan kembali ke ayunan dasar.
+        if (Math.abs(g.lajuYaw) < 0.0005 && Math.abs(g.lajuPitch) < 0.0005) {
+          g.yaw *= 0.985;
+          g.pitch *= 0.985;
+        }
+      }
+      g.pitch = Math.max(-0.85, Math.min(0.85, g.pitch));
+
       const t = kurangiGerak ? 0.62 : waktu / 1000;
 
-      // Ayunan terbatas, bukan putaran penuh.
-      //
-      // Putaran penuh pernah dicoba: saat tanda tegak lurus terhadap layar,
-      // lebarnya menyusut sampai hampir hilang, dan logo yang seharusnya
-      // jadi pengenal justru lenyap sekejap. Karena itu putarannya dibatasi
-      // pada busur 34 derajat yang selalu menyisakan bentuk terbaca, ditambah
-      // miring halus supaya kedalamannya tetap terasa.
+      // Ayunan dasar terbatas, bukan putaran penuh. Putaran penuh pernah
+      // dicoba: saat tanda tegak lurus layar bentuknya nyaris lenyap. Yang
+      // boleh berputar bebas hanyalah hasil seretan pengguna.
       const ayun = Math.sin(t * 0.30) * 0.30 + 0.22;
-      const putaran = putarY(ayun);
-      const miring = putarX(-0.13 + Math.sin(t * 0.44) * 0.055);
+      const putaran = putarY(ayun + g.yaw);
+      const miring = putarX(-0.13 + Math.sin(t * 0.44) * 0.055 + g.pitch);
 
       const proyeksi = perspektif(0.62, 1, 0.1, 40);
       const kamera = geser(0, 0, -3.5);
@@ -387,14 +428,69 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
       if (!kurangiGerak) requestAnimationFrame(gambar);
     };
 
+    // Bila mengurangi gerakan tidak ada loop otomatis; layar digambar ulang
+    // hanya saat ada input atau ukuran berubah.
+    const gambarSekali = () => {
+      if (kurangiGerak) requestAnimationFrame(gambar);
+    };
+
     setSiap(true);
     requestAnimationFrame(gambar);
+
+    /* ── seret: mouse, sentuh, dan pen lewat satu jalur Pointer Events ── */
+    const onDown = (e: PointerEvent) => {
+      seret.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      gerak.current.lajuYaw = 0;
+      gerak.current.lajuPitch = 0;
+      kanvas.setPointerCapture(e.pointerId);
+    };
+    const onMove = (e: PointerEvent) => {
+      const s = seret.current;
+      if (!s || s.id !== e.pointerId) return;
+      const g = gerak.current;
+      // 0,0075 radian per piksel: satu sapuan 200 piksel memutar sekitar 30
+      // derajat, cukup untuk melihat sisi tanpa bikin pusing.
+      const dY = (e.clientX - s.x) * 0.0075;
+      const dX = (e.clientY - s.y) * 0.0075;
+      g.yaw += dY;
+      g.pitch = Math.max(-0.85, Math.min(0.85, g.pitch + dX));
+      g.lajuYaw = dY * 0.9;
+      g.lajuPitch = dX * 0.9;
+      s.x = e.clientX;
+      s.y = e.clientY;
+      gambarSekali();
+    };
+    const onUp = (e: PointerEvent) => {
+      if (seret.current?.id === e.pointerId) seret.current = null;
+      gambarSekali();
+    };
+
+    kanvas.addEventListener("pointerdown", onDown);
+    kanvas.addEventListener("pointermove", onMove);
+    kanvas.addEventListener("pointerup", onUp);
+    kanvas.addEventListener("pointercancel", onUp);
+
+    /* keyboard: fokus dengan Tab, putar dengan panah, Home atau Esc untuk diam */
+    const onKey = (e: KeyboardEvent) => {
+      const g = gerak.current;
+      const langkah = 0.16;
+      if (e.key === "ArrowLeft") g.yaw -= langkah;
+      else if (e.key === "ArrowRight") g.yaw += langkah;
+      else if (e.key === "ArrowUp") g.pitch = Math.max(-0.85, g.pitch - langkah);
+      else if (e.key === "ArrowDown") g.pitch = Math.min(0.85, g.pitch + langkah);
+      else if (e.key === "Home" || e.key === "Escape") {
+        g.yaw = 0; g.pitch = 0; g.lajuYaw = 0; g.lajuPitch = 0;
+      } else return;
+      e.preventDefault();
+      gambarSekali();
+    };
+    kanvas.addEventListener("keydown", onKey);
 
     /* berhenti saat tidak terlihat, supaya baterai tidak terkuras */
     const io = new IntersectionObserver(
       (entri) => {
         terlihat = entri[0]?.isIntersecting ?? true;
-        if (terlihat && !kurangiGerak) requestAnimationFrame(gambar);
+        if (terlihat) gambarSekali();
       },
       { threshold: 0.05 },
     );
@@ -402,7 +498,7 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
 
     const ro = new ResizeObserver(() => {
       aturUkuran();
-      if (kurangiGerak) requestAnimationFrame(gambar);
+      gambarSekali();
     });
     ro.observe(kanvas);
 
@@ -411,6 +507,11 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
       pengamat.disconnect();
       io.disconnect();
       ro.disconnect();
+      kanvas.removeEventListener("pointerdown", onDown);
+      kanvas.removeEventListener("pointermove", onMove);
+      kanvas.removeEventListener("pointerup", onUp);
+      kanvas.removeEventListener("pointercancel", onUp);
+      kanvas.removeEventListener("keydown", onKey);
       benda.forEach((b) => {
         gl.deleteBuffer(b.buf);
         gl.deleteBuffer(b.nor);
@@ -418,25 +519,25 @@ export default function Tanda3D({ ukuran = 420 }: { ukuran?: number }) {
       });
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [ukuran]);
+  }, []);
 
   if (gagal) {
-    // Tanpa WebGL tetap ada tanda, bukan ruang kosong.
+    // Tanpa WebGL tetap ada tanda (berkas asli), bukan ruang kosong.
     return (
-      <div className="grid place-items-center text-tinta" style={{ width: ukuran, height: ukuran }}>
-        <Tanda ukuran={ukuran * 0.7} />
+      <div className={`grid aspect-square place-items-center text-tinta ${kelas ?? ""}`}>
+        <Tanda ukuran={180} />
       </div>
     );
   }
 
   return (
-    <div className="relative" style={{ width: ukuran, height: ukuran }}>
+    <div className={kelas ?? "w-full"}>
       <canvas
         ref={kanvasRef}
-        width={ukuran}
-        height={ukuran}
-        aria-hidden="true"
-        className="size-full transition-opacity duration-700"
+        role="img"
+        aria-label="Tanda NaoVert tiga dimensi. Seret atau gunakan tombol panah untuk memutar."
+        tabIndex={0}
+        className="tanda-3d size-full max-h-full transition-opacity duration-700"
         style={{ opacity: siap ? 1 : 0 }}
       />
     </div>

@@ -60,51 +60,42 @@ export default function Ikon({
 /**
  * Tanda NaoVert.
  *
- * Dua batang membentuk V, bertemu di satu titik. Batang kiri lebih tipis dan
- * lebih pendek dari batang kanan, sehingga bentuknya terbaca sebagai tanda
- * buatan, bukan sebagai huruf V dari sebuah typeface. Di titik temunya ada
- * satu simpul tembaga: itu satu-satunya warna di dalam tanda, dan itu pula
- * yang membuat logo ini dikenali meski dicetak satu warna pada ukuran kecil.
+ * Ini BUKAN tanda yang digambar ulang. Ini berkas logo asli aplikasi
+ * (NaoVert/assets/logo-256.png dan logo-light-256.png) yang disalin apa
+ * adanya ke public/img, jadi logo situs dan logo aplikasi adalah berkas yang
+ * sama, bukan dua gambar yang mirip. Sudut membulatnya 19,5 persen, diukur
+ * dari lengkung sudut berkas aslinya.
  *
- * Warna memakai `currentColor` supaya tanda ikut warna teks di sekitarnya,
- * kecuali simpul yang tetap tembaga.
+ * Dua berkas dipakai karena logo punya versi gelap dan terang: versinya mana
+ * yang tampil ditentukan tema lewat CSS, tanpa JavaScript.
  */
 export function Tanda({
   ukuran = 28,
-  simpul = true,
   ...sisa
-}: { ukuran?: number; simpul?: boolean } & SVGProps<SVGSVGElement>) {
+}: { ukuran?: number } & SVGProps<HTMLImageElement>) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      width={ukuran}
-      height={ukuran}
-      fill="currentColor"
-      aria-hidden="true"
-      {...sisa}
-    >
-      {/*
-       * Batang kiri: lebih tipis, berhenti di simpul.
-       *
-       * Semua angka dihitung dari titik atas ke simpul, bukan dikira kira.
-       * Dari (6.2, 4.6) ke (16, 26.5) panjangnya 23,993 dan arahnya 24,108
-       * derajat ke kanan bawah. Sudut lama 62,5 derajat membuat batang ini
-       * menjauh ke kiri luar kanvas dan berakhir di (-13,5, 16,3), sehingga
-       * huruf V tidak pernah terbentuk.
-       */}
-      <g transform="translate(6.2 4.6) rotate(-24.108)">
-        <rect x="-1.6" y="0" width="3.2" height="23.993" />
-      </g>
-      {/*
-       * Batang kanan: lebih tebal sebagai ciri tanda ini. Dari (25.8, 4.6)
-       * ke simpul panjangnya sama, arahnya 24,108 derajat ke kiri bawah.
-       */}
-      <g transform="translate(25.8 4.6) rotate(24.108)">
-        <rect x="-2.1" y="0" width="4.2" height="23.993" />
-      </g>
-      {/* Simpul tembaga di titik temu. */}
-      <circle cx="16" cy="26.5" r="2.6" fill="var(--tembaga)" style={simpul ? undefined : { display: "none" }} />
-    </svg>
+    <>
+      <img
+        src="/img/logo-asli.png"
+        width={ukuran}
+        height={ukuran}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="tanda-logo tanda-gelap"
+        {...sisa}
+      />
+      <img
+        src="/img/logo-asli-terang.png"
+        width={ukuran}
+        height={ukuran}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="tanda-logo tanda-terang"
+        {...sisa}
+      />
+    </>
   );
 }
 

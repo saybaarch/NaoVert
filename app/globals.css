@@ -205,6 +205,13 @@
     box-shadow: 0 12px 34px -20px rgba(0, 0, 0, 0.7);
   }
 
+  /* Keadaan awal (belum digulir): apa adanya .kapsul-nav, kelas ini menandai
+     keadaan supaya transisi bolak balik padat/lega punya dua titik akhir yang
+     jelas, bukan kembali ke tanpa kelas. */
+  .kapsul-lega {
+    box-shadow: none;
+  }
+
   /* Panel menu ponsel ikut kapsul, bukan kotak penuh. */
   .kapsul-menu {
     max-width: 976px;
@@ -218,6 +225,78 @@
     .kapsul-menu {
       max-width: none;
     }
+  }
+
+  /*
+   * Logo asli aplikasi, dipakai apa adanya (lihat components/ikon.tsx).
+   *
+   * Dua berkas dimuat tapi hanya satu yang tampil: versi gelap untuk tema
+   * gelap, versi terang untuk tema terang. Ditukar lewat CSS, bukan
+   * JavaScript, jadi tidak ada kedipan saat tema berganti.
+   */
+  .tanda-logo {
+    display: block;
+    border-radius: 19.5%; /* mengikuti lengkung sudut berkas aslinya */
+    object-fit: contain;
+  }
+
+  .tanda-terang {
+    display: none;
+  }
+
+  :root[data-tema="terang"] .tanda-gelap {
+    display: none;
+  }
+
+  :root[data-tema="terang"] .tanda-terang {
+    display: block;
+  }
+
+  /*
+   * Carousel CSS murni untuk galeri di ponsel.
+   *
+   * Batang gulirnya dihilangkan supaya deretan gambar terbaca sebagai
+   * tumpukan kartu, bukan tabel yang bisa digeser. Gulir tetap bisa lewat
+   * sentuhan dan keyboard, hanya visual batang gulirnya yang tidak ditampilkan.
+   */
+  .geser-kejutan {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .geser-kejutan::-webkit-scrollbar {
+    display: none;
+  }
+
+  /*
+   * Kanvas 3D dan wadahnya.
+   *
+   * Wadahnya kaca satu-satunya di layar pertama: lapisan tipis blur di
+   * belakang tanda, supaya benda 3D terasa melayang di atas halaman, bukan
+   * tertempel. Blur dijaga hemat (satu elemen, saturasi rendah) karena
+   * backdrop-filter adalah operasi GPU termahal di halaman.
+   *
+   * touch-action: pan-y membiarkan gestur geser ke atas bawah tetap
+   * menggulir halaman; hanya geser mendatar yang dianggap memutar benda,
+   * jadi ponsel tidak merasa "dicuri" sentuhannya.
+   */
+  .kaca-3d {
+    position: relative;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--panel) 55%, transparent);
+    border: 1px solid var(--garis);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+  }
+
+  .tanda-3d {
+    touch-action: pan-y;
+    cursor: grab;
+    outline-offset: 3px;
+  }
+
+  .tanda-3d:active {
+    cursor: grabbing;
   }
 
   /*

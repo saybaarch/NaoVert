@@ -70,11 +70,16 @@ export default function Hero() {
           </div>
 
           <div className="justify-self-center lg:justify-self-end">
-            <div className="hidden sm:block">
-              <Tanda3D ukuran={380} />
-            </div>
-            <div className="sm:hidden">
-              <Tanda3D ukuran={230} />
+            {/*
+              3D sekarang mengikuti ukuran wadahnya: kotak yang sama di ponsel
+              dan laptop, hanya sisinya yang berubah lewat kelas responsif.
+              Tidak ada lagi dua komponen untuk dua ukuran.
+            */}
+            <div className="kaca-3d aspect-square w-[min(78vw,230px)] sm:w-[min(60vw,320px)] lg:w-[360px] xl:w-[400px]">
+              <Tanda3D kelas="size-full" />
+              <p className="label absolute bottom-3 left-0 right-0 text-center text-[10.5px] text-tinta-3">
+                Seret putar
+              </p>
             </div>
           </div>
         </div>

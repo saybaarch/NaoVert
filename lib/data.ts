@@ -134,7 +134,7 @@ export const tangkapan = {
 export const media = {
   video: "/media/panduan-naovert.mp4",
   poster: "/media/poster-panduan.jpg",
-  durasi: "01:45",
+  durasi: "01:01",
 } as const;
 
 /* ── naskah bercerita ──────────────────────────────────────────────────── */

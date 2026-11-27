@@ -1,20 +1,22 @@
 """
 Menyusun video panduan NaoVert dari tangkapan UI aplikasi yang sungguhan.
 
-Yang membedakan versi ini dari versi sebelumnya:
+Versi ini TANPA AUDIO. Permintaan pemilik proyek (27 November 2026): video
+tanpa suara, diganti teks dan transisi yang menarik. Karena itu:
 
-1. Ada suara narasi. Panjang tiap adegan mengikuti panjang kalimatnya, bukan
-   dipaksa lima detik. Sebelumnya penonton harus membaca sendiri sambil
-   gambar berganti, sehingga selalu terasa tergesa.
-2. Kamera hanya bergerak pada panel aplikasi. Jalur judul dan jalur kalimat
-   tetap diam, jadi huruf tidak ikut membesar dan marginnya tidak bergeser.
-   Versi sebelumnya menzoom seluruh bingkai, dan itu membuat margin kiri 81 px
-   sementara kanan 73 px.
-3. Sorotan memakai sudut siku, bukan kotak penuh. Kotak penuh menutupi isi
-   panel, sudut siku hanya menunjuk bagian yang dibicarakan.
-
-Suara narasi memakai mesin suara Indonesia bawaan Windows (alat/suara.ps1),
-jadi tidak ada berkas suara pihak lain yang ikut disimpan di repositori.
+1. Penahan perhatian bukan lagi narasi, tapi teks yang muncul bertahap.
+   Judul lebih dulu, lalu kalimatnya menyusul, masing masing dengan pudar
+   singkat, sehingga mata pembaca dipimpin, bukan dibombardir.
+2. Transisi antar adegan tidak seragam. Silang pudar, geser, lingkaran buka,
+   dan dissolve dipakai bergantian, semuanya xfade bawaan ffmpeg, jadi tidak
+   ada pustaka tambahan.
+3. Panjang adegan tetap (7,2 detik) karena tidak ada suara yang menentukan.
+   Angka itu cukup untuk membaca judul dan satu baris kalimat sebelum adegan
+   berganti, dan menjaga seluruh video di bawah satu menit.
+4. Kamera hanya bergerak pada panel aplikasi. Jalur judul dan jalur kalimat
+   tetap diam, jadi huruf tidak ikut membesar dan margin tidak bergeser.
+5. Logo pada jalur atas adalah berkas logo ASLI aplikasi, bukan tanda yang
+   digambar ulang.
 
     python alat/buat-video.py
 """
@@ -31,7 +33,6 @@ from PIL import Image, ImageDraw, ImageFont
 AKAR = Path(__file__).resolve().parent.parent
 UI = AKAR / "public" / "tangkapan"
 KELUAR = AKAR / "public" / "media"
-SUARA_PS1 = AKAR / "alat" / "suara.ps1"
 IKON_PY = AKAR / "alat" / "buat-ikon.py"
 
 # Alamat yang ditulis di penutup harus alamat yang benar benar hidup. Situs
@@ -56,108 +57,100 @@ FONT_TEBAL = "C:/Windows/Fonts/segoeuib.ttf"
 FONT_BIASA = "C:/Windows/Fonts/segoeui.ttf"
 FONT_MONO = "C:/Windows/Fonts/consola.ttf"
 
-# Tata letak 1920x1080. Jalur atas memuat semua keterangan, jalur bawah hanya
-# kalimat kunci, jadi panel aplikasi dapat ruang setinggi mungkin.
+# Tata letak 1920x1080. Jalur atas memuat merek dan nomor adegan, jalur
+# bawah memuat judul dan kalimat. Panel diapit keduanya.
 JALUR_ATAS = 118
-JALUR_BAWAH = 92
+JALUR_BAWAH = 150
 PANEL_Y = JALUR_ATAS
 PANEL_H_MAX = H - PANEL_Y - JALUR_BAWAH
 
-LEAD = 0.55                   # jeda sebelum narasi mulai
-EKOR = 0.70                   # jeda setelah narasi habis
-TRANSISI = 0.50
+TRANSISI = 0.60
 ZUM = 1.09                    # pembesaran panel selama satu adegan
+DUR_ADEGAN = 7.20
+DUR_TUTUP = 8.00
+
+# Teks muncul bertahap (detik sejak adegan mulai): judul, lalu kalimatnya.
+MULA_JUDUL = 0.35
+MULA_KALIMAT = 1.15
+PUDAR = 0.40
+
+# Transisi antar adegan bergantian, bukan satu jenis untuk semua. Yang
+# dipilih adalah xfade bawaan ffmpeg yang bergerak horizontal atau melingkar,
+# supaya cocok dengan arah baca, tanpa efek yang terasa "template".
+TRANSISI_ANTAR = [
+    "slideleft", "circleopen", "wiperight", "fade",
+    "smoothleft", "circleclose", "dissolve", "slideup",
+]
 
 ADEGAN = [
     {
         "berkas": "01-kosong.png",
         "judul": "Buka NaoVert",
         "kunci": "Semua mesin sudah terpasang, tidak ada unduhan tambahan.",
-        "ucap": "NaoVert terbuka dalam keadaan siap. Semua mesin konversi sudah "
-                "terpasang di dalamnya, jadi tidak ada unduhan tambahan sebelum "
-                "berkas pertama diproses.",
         "sorot": (0.06, 0.28, 0.94, 0.90),
     },
     {
         "berkas": "02-berkas-masuk.png",
         "judul": "Masukkan berkas",
         "kunci": "Pilih Berkas, Pilih Folder, atau seret berkas ke jendela.",
-        "ucap": "Ada tiga cara memasukkan berkas. Tekan Pilih Berkas, tekan "
-                "Pilih Folder, atau seret berkas ke jendela. Berkas dari "
-                "beberapa folder berbeda boleh masuk sekaligus.",
         "sorot": (0.06, 0.40, 0.94, 0.92),
     },
     {
         "berkas": "03-pilih-format.png",
         "judul": "Pilih format tujuan",
         "kunci": "Hanya format yang benar benar bisa ditulis yang muncul.",
-        "ucap": "Daftar tujuan hanya menampilkan format yang benar benar bisa "
-                "ditulis untuk berkas itu. Format yang tidak mungkin tidak "
-                "pernah muncul, jadi pilihan yang salah tidak perlu ditebak.",
         "sorot": (0.06, 0.30, 0.62, 0.88),
     },
     {
         "berkas": "04-proses.png",
         "judul": "Jalankan konversi",
         "kunci": "Satu antrean, kemajuan per berkas, bisa dihentikan.",
-        "ucap": "Satu tekanan tombol memproses seluruh antrean. Kemajuan "
-                "setiap berkas terlihat terpisah, dan pekerjaan bisa dihentikan "
-                "tanpa menyentuh berkas aslinya.",
         "sorot": (0.06, 0.60, 0.94, 0.94),
     },
     {
         "berkas": "05-selesai.png",
         "judul": "Hasil di folder yang sama",
         "kunci": "Berkas hasil menemani berkas sumber, aslinya tetap utuh.",
-        "ucap": "Hasilnya diletakkan di folder yang sama dengan berkas sumber, "
-                "dengan nama tambahan sesuai format baru. Berkas asli tidak "
-                "diubah.",
         "sorot": (0.06, 0.40, 0.94, 0.92),
     },
     {
         "berkas": "07-gabung.png",
         "judul": "Gabung dokumen",
         "kunci": "PDF, Word, gambar, dan tabel jadi satu berkas.",
-        "ucap": "Menu Gabung Dokumen menyatukan PDF, Word, gambar, dan tabel "
-                "menjadi satu berkas. Urutan halaman diatur dari daftar di "
-                "dalam dialog.",
         "sorot": (0.10, 0.12, 0.90, 0.90),
     },
     {
         "berkas": "06-pengaturan.png",
         "judul": "Pengaturan",
         "kunci": "Tema, perilaku setelah selesai, integrasi Windows.",
-        "ucap": "Di Pengaturan ada tema, perilaku setelah konversi selesai, "
-                "dan integrasi Windows. Setiap pilihan disimpan, jadi tidak "
-                "perlu diulang di sesi berikutnya.",
         "sorot": (0.10, 0.14, 0.90, 0.92),
     },
     {
         "berkas": "08-terang.png",
         "judul": "Tema terang dan gelap",
         "kunci": "Dua tema bawaan, pilihannya diingat aplikasi.",
-        "ucap": "Tema terang dan tema gelap sama sama bawaan. Pilihannya "
-                "diingat aplikasi, dan seluruh jendela berganti sekaligus, "
-                "bukan sebagian.",
         "sorot": (0.06, 0.18, 0.94, 0.92),
     },
 ]
 
 TUTUP_JUDUL = "Satu aplikasi untuk semua berkas."
-TUTUP_KUNCI = "Bagian dari Sayba Arc."
-TUTUP_UCAP = "NaoVert, bagian dari Sayba Arc. Panduan lengkap dan unduhan ada di situs Sayba Arc."
+TUTUP_KUNCI = "Panduan, daftar format, dan unduhan ada di situs Sayba Arc."
 
 _modul_ikon = None
 
 
 def tanda(ukuran: int) -> Image.Image:
-    """Tanda V, diambil dari generator ikon supaya geometrinya persis sama."""
+    """Logo ASLI aplikasi, diambil dari generator ikon situs.
+
+    Generator itu menyalin berkas logo dari folder aset aplikasi, jadi jalur
+    atas video memakai gambar yang sama persis dengan tab peramban.
+    """
     global _modul_ikon
     if _modul_ikon is None:
         spesifikasi = importlib.util.spec_from_file_location("buat_ikon", IKON_PY)
         _modul_ikon = importlib.util.module_from_spec(spesifikasi)
         spesifikasi.loader.exec_module(_modul_ikon)
-    return _modul_ikon.gambar_tanda(ukuran)
+    return _modul_ikon.salin("logo-256.png", ukuran)
 
 
 def potong(d: ImageDraw.ImageDraw, teks: str, font, lebar: int, maks: int = 2) -> list[str]:
@@ -187,15 +180,15 @@ def ukuran_panel(sumber: Image.Image) -> tuple[int, int]:
 
 def latar_bingkai(adegan: dict, nomor: int, total: int, panel_w: int,
                   panel_h: int, keluar: Path) -> None:
-    """Jalur atas, bingkai panel, dan kalimat kunci. Panelnya ditempel nanti."""
+    """Bingkai dasar tanpa teks gerak: merek, nomor adegan, garis panel."""
     px = (W - panel_w) // 2
     kanvas = Image.new("RGB", (W, H), LATAR)
     d = ImageDraw.Draw(kanvas)
 
-    # Jalur atas: tanda, nama, keterangan, nomor adegan. Semua disejajarkan
+    # Jalur atas: logo asli, nama, keterangan, nomor adegan. Semua disejajarkan
     # pada tepi panel, bukan tepi layar, supaya komposisinya satu blok.
-    t = tanda(44)
-    kanvas.paste(t, (px, 34), t)
+    logo = tanda(44).convert("RGB")
+    kanvas.paste(logo, (px, 34))
 
     nama = ImageFont.truetype(FONT_JUDUL, 33)
     d.text((px + 58, 36), "NaoVert", font=nama, fill=TINTA)
@@ -204,7 +197,7 @@ def latar_bingkai(adegan: dict, nomor: int, total: int, panel_w: int,
     kanan = f"{nomor:02d} / {total:02d}"
     lebar_kanan = d.textlength(kanan, font=kecil)
     d.text((px + panel_w - lebar_kanan, 48), kanan, font=kecil, fill=TINTA_3)
-    tengah = "Panduan pemakaian  ·  From Sayba Arc"
+    tengah = "Panduan tanpa suara  ·  From Sayba Arc"
     d.text((px + panel_w - lebar_kanan - 24 - d.textlength(tengah, font=kecil), 48),
            tengah, font=kecil, fill=TINTA_3)
 
@@ -212,13 +205,36 @@ def latar_bingkai(adegan: dict, nomor: int, total: int, panel_w: int,
     # bayangan hanya akan jadi kabut.
     d.rectangle([px - 1, PANEL_Y - 1, px + panel_w, PANEL_Y + panel_h], outline=GARIS)
 
-    # Kalimat kunci; kalimat penuh sudah diucapkan narasi.
-    font_kunci = ImageFont.truetype(FONT_BIASA, 25)
-    baris = potong(d, adegan["kunci"], font_kunci, panel_w, 2)
-    ty = PANEL_Y + panel_h + 28
-    for b in baris:
-        d.text((px, ty), b, font=font_kunci, fill=TINTA_2)
-        ty += 33
+    kanvas.save(keluar)
+
+
+def layer_teks(panel_w: int, panel_h: int, keluar: Path, *,
+               judul: str | None = None, kalimat: list[str] | None = None,
+               mulai: int = 0) -> None:
+    """Satu lapisan transparan berisi sebagian teks adegan.
+
+    Judul dan kalimat dibuat sebagai lapisan terpisah supaya bisa muncul
+    bergiliran lewat filter fade, bukan ditulis di gambar dasar yang diam.
+
+    `mulai` menggeser titik turun teks. Karena tiap adegan memanggil fungsi
+    ini dua kali (satu lapisan judul, satu lapisan kalimat), lapisan kalimat
+    harus mulai tepat di bawah tempat judul berdiri, bukan di titik yang sama.
+    """
+    px = (W - panel_w) // 2
+    kanvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(kanvas)
+
+    ty = PANEL_Y + panel_h + 26 + mulai
+    if judul is not None:
+        d.text((px, ty), judul, font=ImageFont.truetype(FONT_JUDUL, 33),
+               fill=TINTA + (255,))
+        ty += 45
+
+    if kalimat:
+        font_kunci = ImageFont.truetype(FONT_BIASA, 24)
+        for b in kalimat:
+            d.text((px, ty), b, font=font_kunci, fill=TINTA_2 + (255,))
+            ty += 31
 
     kanvas.save(keluar)
 
@@ -248,43 +264,42 @@ def panel_berkas(adegan: dict, lebar: int, tinggi: int, keluar: Path, kali: int 
     panel.save(keluar)
 
 
-def bingkai_tutup(keluar: Path) -> None:
+def bingkai_tutup(keluar: Path) -> Path:
+    """Latar penutup, lalu dua lapisan teks yang muncul bergiliran."""
     im = Image.new("RGB", (W, H), LATAR)
     d = ImageDraw.Draw(im)
 
-    t = tanda(92)
-    im.paste(t, (72, 330), t)
-
+    logo = tanda(92).convert("RGB")
+    im.paste(logo, (72, 330))
     d.text((186, 344), "NaoVert", font=ImageFont.truetype(FONT_JUDUL, 64), fill=TINTA)
-    d.text((72, 470), TUTUP_JUDUL, font=ImageFont.truetype(FONT_JUDUL, 74), fill=TINTA)
-    d.text((72, 576), TUTUP_KUNCI, font=ImageFont.truetype(FONT_BIASA, 29), fill=TINTA_2)
     d.text((72, 634), ALAMAT, font=ImageFont.truetype(FONT_MONO, 25), fill=TEMBAGA)
+    d.line([(72, 700), (1104, 700)], fill=GARIS, width=2)
     d.text((72, H - 70), "From Sayba Arc", font=ImageFont.truetype(FONT_TEBAL, 19), fill=TEMBAGA)
-    im.save(keluar)
+    dasar = keluar.with_name("tutup-dasar.png")
+    im.save(dasar)
 
-
-def durasi_berkas(berkas: Path) -> float:
-    hasil = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-         "-of", "default=nw=1:nk=1", str(berkas)],
-        check=True, capture_output=True, text=True,
+    k1 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(k1).text(
+        (72, 470), TUTUP_JUDUL,
+        font=ImageFont.truetype(FONT_JUDUL, 74), fill=TINTA + (255,),
     )
-    return float(hasil.stdout.strip())
+    p1 = keluar.with_name("tutup-judul.png")
+    k1.save(p1)
 
-
-def ucapkan(teks: str, keluar_wav: Path) -> float:
-    """Merekam satu kalimat dengan suara Indonesia bawaan Windows."""
-    subprocess.run(
-        ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
-         "-File", str(SUARA_PS1), "-Teks", teks, "-Keluar", str(keluar_wav)],
-        check=True, capture_output=True, text=True,
+    k2 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(k2).text(
+        (72, 566), TUTUP_KUNCI,
+        font=ImageFont.truetype(FONT_BIASA, 27), fill=TINTA_2 + (255,),
     )
-    return durasi_berkas(keluar_wav)
+    p2 = keluar.with_name("tutup-kunci.png")
+    k2.save(p2)
+    return dasar
 
 
 def klip_adegan(latar_png: Path, panel_png: Path, lebar: int, tinggi: int,
-                sorot: tuple, lama: float, keluar: Path) -> None:
-    """Klip satu adegan: latar diam, panel bergerak ke arah sorotan."""
+                sorot: tuple, judul_png: Path, kalimat_png: Path,
+                lama: float, keluar: Path) -> None:
+    """Klip satu adegan: latar diam, panel bergerak, teks muncul bergiliran."""
     n = max(int(lama * FPS), 2)
     px = (W - lebar) // 2
 
@@ -298,26 +313,52 @@ def klip_adegan(latar_png: Path, panel_png: Path, lebar: int, tinggi: int,
         f"x='max(0,min({cx:.4f}*iw-(iw/zoom)/2,iw-iw/zoom))':"
         f"y='max(0,min({cy:.4f}*ih-(ih/zoom)/2,ih-ih/zoom))':"
         f"d={n}:s={lebar}x{tinggi}:fps={FPS}[p];"
-        f"[1:v][p]overlay={px}:{PANEL_Y}:format=auto,format=yuv420p[v]"
+        f"[1:v][p]overlay={px}:{PANEL_Y}:format=auto[base];"
+        # Judul muncul lebih dulu, lalu kalimatnya menyusul.
+        f"[2:v]format=rgba,fade=t=in:st={MULA_JUDUL:.3f}:d={PUDAR:.3f}:alpha=1[jud];"
+        f"[base][jud]overlay=0:0:format=auto[tk1];"
+        f"[3:v]format=rgba,fade=t=in:st={MULA_KALIMAT:.3f}:d={PUDAR:.3f}:alpha=1[kal];"
+        f"[tk1][kal]overlay=0:0:format=auto,format=yuv420p[v]"
     )
     subprocess.run(
         ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
          "-i", str(panel_png), "-loop", "1", "-i", str(latar_png),
+         "-loop", "1", "-i", str(judul_png), "-loop", "1", "-i", str(kalimat_png),
          "-filter_complex", saringan, "-map", "[v]",
-         "-t", f"{lama:.3f}", "-r", str(FPS),
+         "-t", f"{lama:.3f}", "-r", str(FPS), "-an",
          "-c:v", "libx264", "-preset", "medium", "-crf", "19", str(keluar)],
         check=True,
     )
 
 
-def klip_diam(png: Path, lama: float, keluar: Path) -> None:
+def klip_tutup_png(dasar: Path, judul_png: Path, kunci_png: Path,
+                   lama: float, keluar: Path) -> None:
+    """Klip penutup: dasar diam, dua lapis teks muncul bergiliran."""
+    saringan = (
+        f"[1:v]format=rgba,fade=t=in:st=0.50:d={PUDAR:.3f}:alpha=1[tx0];"
+        f"[0:v][tx0]overlay=0:0:format=auto[tk1];"
+        f"[2:v]format=rgba,fade=t=in:st=1.40:d={PUDAR:.3f}:alpha=1[tx1];"
+        f"[tk1][tx1]overlay=0:0:format=auto,format=yuv420p[v]"
+    )
     subprocess.run(
         ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-         "-loop", "1", "-i", str(png), "-t", f"{lama:.3f}", "-r", str(FPS),
-         "-vf", "format=yuv420p",
+         "-loop", "1", "-i", str(dasar),
+         "-loop", "1", "-i", str(judul_png),
+         "-loop", "1", "-i", str(kunci_png),
+         "-filter_complex", saringan, "-map", "[v]",
+         "-t", f"{lama:.3f}", "-r", str(FPS), "-an",
          "-c:v", "libx264", "-preset", "medium", "-crf", "19", str(keluar)],
         check=True,
     )
+
+
+def ada_audio(berkas: Path) -> bool:
+    hasil = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "a",
+         "-show_entries", "stream=index", "-of", "csv=p=0", str(berkas)],
+        check=True, capture_output=True, text=True,
+    )
+    return bool(hasil.stdout.strip())
 
 
 def main() -> None:
@@ -328,49 +369,55 @@ def main() -> None:
     if hilang:
         raise SystemExit("tangkapan belum ada: " + ", ".join(hilang))
 
-    # 1. Narasi dulu, karena panjangnya menentukan panjang adegan.
-    panjang: list[float] = []
-    for i, a in enumerate(ADEGAN):
-        lama = ucapkan(a["ucap"], kerja / f"suara-{i:02d}.wav")
-        panjang.append(round(lama + LEAD + EKOR, 2))
-        print(f"  narasi {i + 1}: {lama:.2f} s -> adegan {panjang[-1]:.2f} s")
+    semua_panjang = [DUR_ADEGAN] * len(ADEGAN) + [DUR_TUTUP]
 
-    lama_tutup = ucapkan(TUTUP_UCAP, kerja / "suara-tutup.wav")
-    panjang_tutup = round(lama_tutup + LEAD + 1.2, 2)
-    print(f"  narasi penutup: {lama_tutup:.2f} s -> adegan {panjang_tutup:.2f} s")
-    semua_panjang = panjang + [panjang_tutup]
-
-    # 2. Bahan gambar dan klip.
+    # 1. Bahan gambar dan klip per adegan.
     klip: list[Path] = []
     poster_sumber = None
+    periksa = ImageDraw.Draw(Image.new("RGB", (8, 8)))
     for i, a in enumerate(ADEGAN):
-        lebar, tinggi = ukuran_panel(Image.open(UI / a["berkas"]))
+        sumber = Image.open(UI / a["berkas"])
+        lebar, tinggi = ukuran_panel(sumber)
+        baris = potong(periksa, a["kunci"], ImageFont.truetype(FONT_BIASA, 24), lebar, 2)
+
         latar = kerja / f"latar-{i:02d}.png"
         latar_bingkai(a, i + 1, len(ADEGAN), lebar, tinggi, latar)
         panel = kerja / f"panel-{i:02d}.png"
         panel_berkas(a, lebar, tinggi, panel)
 
+        judul_png = kerja / f"judul-{i:02d}.png"
+        layer_teks(lebar, tinggi, judul_png, judul=a["judul"])
+        kalimat_png = kerja / f"kalimat-{i:02d}.png"
+        # Mulai 45 px di bawah titik turun judul: tinggi baris judul itu
+        # sendiri. Tanpa geseran ini kalimat mendarat di atas judul.
+        layer_teks(lebar, tinggi, kalimat_png, kalimat=baris, mulai=45)
+
         mp4 = kerja / f"klip-{i:02d}.mp4"
-        klip_adegan(latar, panel, lebar, tinggi, a["sorot"], semua_panjang[i], mp4)
+        klip_adegan(latar, panel, lebar, tinggi, a["sorot"], judul_png, kalimat_png,
+                    semua_panjang[i], mp4)
         klip.append(mp4)
 
         if i == 0:
-            # Poster: bingkai diam pada panel yang sama, tanpa skala kamera.
+            # Poster: komposisi penuh dengan semua teks sudah tampil.
+            px = (W - lebar) // 2
+            kanvas = Image.open(latar).convert("RGBA")
+            kanvas.paste(Image.open(panel).convert("RGBA").resize(
+                (lebar, tinggi), Image.LANCZOS), (px, PANEL_Y))
+            kanvas.alpha_composite(Image.open(judul_png))
+            kanvas.alpha_composite(Image.open(kalimat_png))
             poster_sumber = kerja / "poster-penuh.png"
-            kanvas = Image.open(latar).convert("RGB")
-            kanvas.paste(Image.open(panel).resize((lebar, tinggi), Image.LANCZOS),
-                         ((W - lebar) // 2, PANEL_Y))
-            kanvas.save(poster_sumber)
+            kanvas.convert("RGB").save(poster_sumber)
 
-        print(f"  klip {i + 1}: {lebar}x{tinggi}  {semua_panjang[i]:.2f} s")
+        print(f"  klip {i + 1}: {lebar}x{tinggi}  {semua_panjang[i]:.2f} s  baris={len(baris)}")
 
-    tutup = kerja / "tutup.png"
-    bingkai_tutup(tutup)
+    # 2. Penutup: dasar diam, dua lapis teks bergiliran.
+    dasar = bingkai_tutup(kerja / "tutup.png")
     klip_tutup = kerja / "klip-tutup.mp4"
-    klip_diam(tutup, semua_panjang[-1], klip_tutup)
+    klip_tutup_png(dasar, kerja / "tutup-judul.png", kerja / "tutup-kunci.png",
+                   semua_panjang[-1], klip_tutup)
     klip.append(klip_tutup)
 
-    # 3. Sambung dengan transisi silang, lalu garis kemajuan dan pudar.
+    # 3. Sambung dengan transisi yang bergantian, lalu garis kemajuan dan pudar.
     masukan: list[str] = []
     for k in klip:
         masukan += ["-i", str(k)]
@@ -378,12 +425,11 @@ def main() -> None:
     saringan = ""
     posisi = 0.0
     sebelumnya = "0:v"
-    mulai_adegan = [0.0]
     for i in range(1, len(klip)):
         posisi += semua_panjang[i - 1] - TRANSISI
-        mulai_adegan.append(posisi)
+        jenis = TRANSISI_ANTAR[(i - 1) % len(TRANSISI_ANTAR)]
         saringan += (
-            f"[{sebelumnya}][{i}:v]xfade=transition=fade:"
+            f"[{sebelumnya}][{i}:v]xfade=transition={jenis}:"
             f"duration={TRANSISI}:offset={posisi:.3f}[v{i}];"
         )
         sebelumnya = f"v{i}"
@@ -397,54 +443,13 @@ def main() -> None:
         f"format=yuv420p[v]"
     )
 
-    bisu = kerja / "bisu.mp4"
-    subprocess.run(
-        ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-         *masukan, "-filter_complex", saringan, "-map", "[v]",
-         "-c:v", "libx264", "-preset", "medium", "-crf", "21",
-         "-pix_fmt", "yuv420p", str(bisu)],
-        check=True,
-    )
-
-    # 4. Jalur suara: tiap narasi diletakkan pada waktu mulainya adegan, jadi
-    # ucapan dan gambar tidak bergeser walau panjang adegan berbeda.
-    suara_masukan: list[str] = []
-    for i in range(len(ADEGAN)):
-        suara_masukan += ["-i", str(kerja / f"suara-{i:02d}.wav")]
-    suara_masukan += ["-i", str(kerja / "suara-tutup.wav")]
-
-    bagian = []
-    for i in range(len(semua_panjang)):
-        tunda = int((mulai_adegan[i] + LEAD) * 1000)
-        bagian.append(
-            f"[{i}:a]aresample=48000,highshelf=f=3200:g=2.5,"
-            f"adelay={tunda}|{tunda}[a{i}]"
-        )
-    gabung = "".join(f"[a{i}]" for i in range(len(semua_panjang)))
-    bagian.append(
-        f"{gabung}amix=inputs={len(semua_panjang)}:normalize=0,"
-        f"loudnorm=I=-16:TP=-1.5:LRA=11,"
-        f"apad=whole_dur={total:.3f},atrim=0:{total:.3f}[a]"
-    )
-
-    jalur = kerja / "suara.m4a"
-    subprocess.run(
-        ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-         *suara_masukan, "-filter_complex", ";".join(bagian), "-map", "[a]",
-         # loudnorm bekerja pada 192 kHz, jadi laju sampel ditetapkan ulang.
-         # Tanpa ini hasilnya 96 kHz, dan sebagian peramban menolaknya.
-         "-ar", "48000", "-ac", "2", "-c:a", "aac", "-b:a", "128k", str(jalur)],
-        check=True,
-    )
-
-    # 5. Gabungkan gambar dan suara.
     akhir = KELUAR / "panduan-naovert.mp4"
     subprocess.run(
         ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-         "-i", str(bisu), "-i", str(jalur),
-         "-map", "0:v", "-map", "1:a",
-         "-c:v", "copy", "-c:a", "copy",
-         "-movflags", "+faststart", "-shortest", str(akhir)],
+         *masukan, "-filter_complex", saringan, "-map", "[v]",
+         "-an", "-r", str(FPS),
+         "-c:v", "libx264", "-preset", "medium", "-crf", "21",
+         "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(akhir)],
         check=True,
     )
 
@@ -456,6 +461,7 @@ def main() -> None:
     for p in (akhir, poster):
         print(f"  {p.relative_to(AKAR)}  {p.stat().st_size:,} B")
     print(f"  durasi total {total:.2f} s")
+    print(f"  jalur audio: {'ADA (cacat!)' if ada_audio(akhir) else 'tidak ada, sesuai permintaan'}")
 
 
 if __name__ == "__main__":

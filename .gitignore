@@ -2,6 +2,7 @@
 admin.txt
 gobiz.txt
 github & supabase token.txt
+github & supabase token & Vercel.txt
 *.pfx
 *.key
 .env

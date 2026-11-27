@@ -6,10 +6,14 @@ import Muncul from "@/components/muncul";
 /**
  * Bagian video panduan.
  *
- * Videonya bukan lagi presentasi gambar diam. Isinya rekaman aplikasi yang
- * sungguhan, berjalan mengikuti urutan pemakaian: buka, masukkan berkas, pilih
- * format, jalankan, ambil hasil, atur sekali. Tiap adegan disorot pada bagian
- * yang sedang dijelaskan, dengan satu kalimat di bawahnya.
+ * Isinya rekaman aplikasi yang sungguhan, berjalan mengikuti urutan pemakaian:
+ * buka, masukkan berkas, pilih format, jalankan, ambil hasil, atur sekali.
+ * Tiap adegan disorot pada bagian yang sedang dipakai, dengan judul dan
+ * satu kalimat yang muncul bertahap.
+ *
+ * Videonya tanpa suara, sesuai permintaan pemilik proyek. Penjelasannya
+ * lewat teks di dalam gambar, jadi panduan ini tetap bisa dipakai di tempat
+ * umum tanpa mengangkat volume, dan tidak ada yang perlu didengar ulang.
  *
  * Karena itu judul bagiannya menyebut panduan pemakaian, bukan "lihat
  * sekilas". Orang yang menekan putar harus tahu ia akan diajari sesuatu.
@@ -28,7 +32,7 @@ export default function BagianVideo() {
               <span className="text-tinta-3">dari berkas pertama sampai selesai.</span>
             </>
           }
-          penjelas="Rekaman aplikasi yang sesungguhnya, dengan suara yang menjelaskan tiap langkah. Sorotan menunjukkan bagian mana yang sedang dipakai."
+          penjelas="Rekaman aplikasi yang sesungguhnya, tanpa suara. Tiap langkah dijelaskan lewat teks dan sorotan di dalam gambar, jadi bisa ditonton di mana saja."
         />
 
         <Muncul className="mt-12">
