@@ -21,21 +21,44 @@ KERTAS = (238, 234, 228)
 TEMBAGA = (192, 125, 79)
 
 # Geometri tanda, sama dengan ikon.tsx (kanvas 32x32).
-SIMPUL = (16.0, 25.6)
+# Batang digambar dari titik atas ke simpul, jadi keduanya selalu bertemu.
+SIMPUL = (16.0, 26.5)
 BATANG = [
-    # (x atas, y atas, lebar)  kiri tipis dan pendek, kanan tebal dan dalam
-    (5.9, 6.2, 3.8),
-    (26.1, 5.2, 5.1),
+    # (x atas, y atas, lebar)  kiri tipis, kanan tebal
+    (6.2, 4.6, 3.2),
+    (25.8, 4.6, 4.2),
 ]
-SIMPUL_R = 3.0
+SIMPUL_R = 2.6
+
+
+def _poligon_batang(px, py, lebar, skala):
+    """Empat sudut batang, dihitung sama seperti rect yang diputar di SVG.
+
+    Dulu batang digambar dengan ImageDraw.line, dan itu menambah ketebalan di
+    ujung sehingga tanda jadi lebih lebar daripada di SVG. Dengan poligon,
+    bentuk PNG dan SVG dijamin sama.
+    """
+    import math
+
+    dx, dy = SIMPUL[0] - px, SIMPUL[1] - py
+    panjang = math.hypot(dx, dy)
+    rot = -math.degrees(math.atan2(dx, dy))   # searah jarum jam, sama dengan rotate()
+    t = math.radians(rot)
+    c, s = math.cos(t), math.sin(t)
+
+    titik = []
+    for lx, ly in ((-lebar / 2, 0), (lebar / 2, 0), (lebar / 2, panjang), (-lebar / 2, panjang)):
+        X = px + lx * c - ly * s
+        Y = py + lx * s + ly * c
+        titik.append((X * skala, Y * skala))
+    return titik
 
 
 def gambar_tanda(ukuran, latar=None, sudut_kotak=0.0):
     """Tanda pada kanvas persegi, dengan penskalaan berlebih lalu diperkecil.
 
     Menggambar pada 8x ukuran akhir lalu memperkecil dengan Lanczos membuat
-    tepinya halus tanpa perlu pustaka grafis tambahan. Batang digambar sebagai
-    garis tebal dari titik atas ke simpul, sama seperti bentuk di SVG.
+    tepinya halus tanpa perlu pustaka grafis tambahan.
     """
     S = ukuran * 8
     skala = S / 32.0
@@ -45,15 +68,11 @@ def gambar_tanda(ukuran, latar=None, sudut_kotak=0.0):
     if latar:
         d.rounded_rectangle([0, 0, S - 1, S - 1], radius=int(sudut_kotak * S), fill=latar)
 
-    bx, by = SIMPUL[0] * skala, SIMPUL[1] * skala
     for ax, ay, lebar in BATANG:
-        d.line(
-            [(ax * skala, ay * skala), (bx, by)],
-            fill=KERTAS,
-            width=max(1, int(round(lebar * skala))),
-        )
+        d.polygon(_poligon_batang(ax, ay, lebar, skala), fill=KERTAS)
 
     # Simpul tembaga menutup titik temu, sekaligus merapikan ujung batang.
+    bx, by = SIMPUL[0] * skala, SIMPUL[1] * skala
     r = SIMPUL_R * skala
     d.ellipse([bx - r, by - r, bx + r, by + r], fill=TEMBAGA)
 
@@ -62,23 +81,53 @@ def gambar_tanda(ukuran, latar=None, sudut_kotak=0.0):
 
 def main():
     KELUAR.mkdir(parents=True, exist_ok=True)
+
+    # Tanda digambar pada kanvas kerja yang lebih besar, lalu dipusatkan dan
+    # diperkecil ke ukuran akhir. Dengan cara ini margin di keempat sisi
+    # selalu sama, berapa pun bentuk tandanya.
+    KANVAS_KERJA = 64
+    MARGIN = 0.15          # 15% tiap sisi, jadi tanda memakai 70% kanvas
+
+    def bertanda(ukuran, latar=None, sudut_kotak=0.0):
+        """Tanda dipusatkan dengan margin sama di tiap sisi, rasio tetap utuh."""
+        besar = gambar_tanda(KANVAS_KERJA * 4, latar=None)
+        tanda = besar.crop(besar.getbbox())
+
+        # Sisi terpanjang dipakai sebagai patokan, sisi lain mengikuti rasio.
+        kotak = int(ukuran * (1 - 2 * MARGIN))
+        skala = kotak / max(tanda.size)
+        lebar = max(1, round(tanda.width * skala))
+        tinggi = max(1, round(tanda.height * skala))
+        tanda = tanda.resize((lebar, tinggi), Image.LANCZOS)
+
+        akhir = Image.new("RGBA", (ukuran, ukuran), (0, 0, 0, 0))
+        if latar:
+            d = ImageDraw.Draw(akhir)
+            d.rounded_rectangle(
+                [0, 0, ukuran - 1, ukuran - 1],
+                radius=int(sudut_kotak * ukuran),
+                fill=latar,
+            )
+        akhir.alpha_composite(tanda, ((ukuran - lebar) // 2, (ukuran - tinggi) // 2))
+        return akhir
+
     dibuat = []
 
     # Ikon tab. Latar arang supaya terlihat di tab terang maupun gelap.
     for n in (16, 32, 48):
-        im = gambar_tanda(n, latar=GELAP, sudut_kotak=0.22)
+        im = bertanda(n, latar=GELAP, sudut_kotak=0.22)
         p = KELUAR / f"favicon-{n}.png"
         im.save(p)
         dibuat.append(p)
 
-    fav = gambar_tanda(256, latar=GELAP, sudut_kotak=0.22)
+    fav = bertanda(256, latar=GELAP, sudut_kotak=0.22)
     p = KELUAR / "favicon.ico"
     fav.save(p, sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
     dibuat.append(p)
 
     # Ikon aplikasi. Sudut lebih membulat karena dipakai di dock dan taskbar.
     for n in (192, 512, 1024):
-        im = gambar_tanda(n, latar=GELAP, sudut_kotak=0.24)
+        im = bertanda(n, latar=GELAP, sudut_kotak=0.24)
         p = KELUAR / f"icon-{n}.png"
         im.save(p)
         dibuat.append(p)
@@ -98,8 +147,9 @@ def main():
 
     bagikan = Image.new("RGB", (1200, 630), GELAP)
     dg = ImageDraw.Draw(bagikan)
-    tanda = gambar_tanda(300, latar=None)
-    bagikan.paste(tanda, (96, 165), tanda)
+    tanda = gambar_tanda(480, latar=None).crop(gambar_tanda(480, latar=None).getbbox())
+    tanda.thumbnail((300, 300), Image.LANCZOS)
+    bagikan.paste(tanda, (96, (630 - tanda.height) // 2), tanda)
 
     dg.text((450, 218), "NaoVert", font=font(96), fill=KERTAS)
     dg.text((452, 330), "Konverter berkas untuk Windows", font=font(36), fill=(179, 172, 162))

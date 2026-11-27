@@ -12,16 +12,18 @@ type Tema = "gelap" | "terang";
 /**
  * Header.
  *
- * Bilah penuh, bukan kapsul melayang: kapsul dengan sudut pil adalah bentuk
- * yang dipakai acuan, sedangkan aplikasi NaoVert memakai sudut tegas dan
- * permukaan penuh. Saat digulir, bilahnya menebal garisnya saja, tidak
- * mengambang.
+ * Bentuknya kapsul melayang: satu permukaan membulat yang mengambang di atas
+ * isi halaman. Alasan bentuk ini hanya dipakai di sini: kapsul memisahkan alat
+ * navigasi dari dokumen di bawahnya, dan karena mengambang ia tidak memakai
+ * baris tata letak saat orang menggulir. Tombol, kartu, dan panel tetap
+ * bersudut 6px supaya kapsul jadi satu satunya bentuk bulat di halaman.
  *
- * Di ponsel menu dibuka di bawah bilah dan bisa ditutup dengan Escape.
+ * Dua keadaan, dan bedanya sengaja kecil: sebelum digulir kapsul lebih lebar
+ * dan lebih tembus pandang, setelah digulir ia menyempit dan menjadi lebih
+ * padat. Tujuannya menandai halaman sudah bergerak, bukan menarik perhatian.
  *
- * Pengalih tema ada di sini karena situs ini punya dua tema yang keduanya
- * bekerja. Pilihannya disimpan di localStorage dan dipasang sebelum halaman
- * dilukis oleh skrip kecil di app/layout.tsx, sehingga tidak ada kedipan.
+ * Di ponsel kapsulnya menyusut jadi satu baris dan menunya membuka panel di
+ * bawahnya, bisa ditutup dengan Escape.
  */
 export default function Header() {
   const [buka, setBuka] = useState(false);
@@ -30,7 +32,7 @@ export default function Header() {
   const jalur = usePathname();
 
   useEffect(() => {
-    const onScroll = () => setGulir(window.scrollY > 6);
+    const onScroll = () => setGulir(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -71,98 +73,106 @@ export default function Header() {
     href.startsWith("/#") ? false : jalur === href || jalur.startsWith(href + "/");
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4">
       <div
         className={cn(
-          "border-b transition-colors duration-200",
-          gulir
-            ? "border-garis bg-latar/92 backdrop-blur-md"
-            : "border-transparent bg-latar",
+          "kapsul-nav mx-auto flex items-center justify-between gap-2 rounded-full border pl-2 pr-2",
+          gulir ? "kapsul-padat" : "kapsul-lega",
         )}
       >
-        <div className="wadah">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex shrink-0 items-center gap-2.5">
-              <Tanda ukuran={23} />
-              <span className="text-[15.5px] font-semibold tracking-[-0.02em]">
-                {situs.nama}
-              </span>
-              <span className="hidden font-mono text-[11px] tracking-[0.06em] text-tinta-3 sm:inline">
-                {situs.versi}
-              </span>
-            </Link>
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-2.5 rounded-full py-1 pl-2.5 pr-1 text-tinta sm:pl-3"
+        >
+          <Tanda ukuran={22} />
+          <span className="text-[15px] font-semibold tracking-[-0.025em]">{situs.nama}</span>
+          <span className="hidden font-mono text-[10.5px] tracking-[0.06em] text-tinta-3 sm:inline">
+            {situs.versi}
+          </span>
+        </Link>
 
-            <nav className="hidden items-center gap-0.5 md:flex" aria-label="Navigasi utama">
-              {navigasi.map((n) => (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className={cn(
-                    "px-3 py-2 text-[13.5px] transition-colors",
-                    aktif(n.href)
-                      ? "text-tinta"
-                      : "text-tinta-2 hover:text-tinta",
-                  )}
-                >
-                  {n.label}
-                </Link>
-              ))}
-            </nav>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={gantiTema}
-                aria-label={
-                  tema === "gelap" ? "Ganti ke tema terang" : "Ganti ke tema gelap"
-                }
-                className="grid size-9 place-items-center rounded-md text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta"
+        <nav className="hidden items-center gap-0.5 md:flex" aria-label="Navigasi utama">
+          {navigasi.map((n) => {
+            const ini = aktif(n.href);
+            return (
+              <Link
+                key={n.href}
+                href={n.href}
+                aria-current={ini ? "page" : undefined}
+                className={cn(
+                  "rounded-full px-3.5 py-2 text-[13.5px] transition-colors duration-200",
+                  ini
+                    ? "bg-timbul text-tinta"
+                    : "text-tinta-2 hover:bg-timbul/60 hover:text-tinta",
+                )}
               >
-                <Ikon nama={tema === "gelap" ? "matahari" : "bulan"} ukuran={17} />
-              </button>
-
-              <Link href="/unduh" className="tombol hidden sm:inline-flex">
-                Unduh
+                {n.label}
               </Link>
+            );
+          })}
+        </nav>
 
-              <button
-                type="button"
-                onClick={() => setBuka((v) => !v)}
-                aria-expanded={buka}
-                aria-controls="menu-ponsel"
-                aria-label={buka ? "Tutup menu" : "Buka menu"}
-                className="grid size-9 place-items-center rounded-md text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta md:hidden"
-              >
-                <Ikon nama={buka ? "tutup" : "menu"} ukuran={19} />
-              </button>
-            </div>
-          </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <button
+            type="button"
+            onClick={gantiTema}
+            aria-label={tema === "gelap" ? "Ganti ke tema terang" : "Ganti ke tema gelap"}
+            className="grid size-10 place-items-center rounded-full text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta"
+          >
+            <Ikon nama={tema === "gelap" ? "matahari" : "bulan"} ukuran={17} />
+          </button>
 
-          {buka && (
-            <div id="menu-ponsel" className="border-t border-garis pb-3 pt-2 md:hidden">
-              <nav className="flex flex-col" aria-label="Navigasi ponsel">
-                {navigasi.map((n) => (
-                  <Link
-                    key={n.href}
-                    href={n.href}
-                    onClick={() => setBuka(false)}
-                    className="rounded-md px-2 py-2.5 text-[15px] text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta"
-                  >
-                    {n.label}
-                  </Link>
-                ))}
-                <Link
-                  href="/unduh"
-                  onClick={() => setBuka(false)}
-                  className="tombol mt-2"
-                >
-                  Unduh NaoVert
-                </Link>
-              </nav>
-            </div>
-          )}
+          <Link
+            href="/unduh"
+            className="hidden h-10 items-center justify-center rounded-full bg-tinta px-5 text-[13.5px] font-semibold tracking-[-0.006em] text-latar transition-colors hover:bg-tinta-2 sm:inline-flex"
+          >
+            Unduh
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setBuka((v) => !v)}
+            aria-expanded={buka}
+            aria-controls="menu-ponsel"
+            aria-label={buka ? "Tutup menu" : "Buka menu"}
+            className="grid size-10 place-items-center rounded-full text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta md:hidden"
+          >
+            <Ikon nama={buka ? "tutup" : "menu"} ukuran={19} />
+          </button>
         </div>
       </div>
+
+      {buka && (
+        <div
+          id="menu-ponsel"
+          className="kapsul-menu mx-auto mt-2 overflow-hidden rounded-[22px] border border-garis-2 bg-latar/95 p-2 backdrop-blur-lg md:hidden"
+        >
+          <nav className="flex flex-col" aria-label="Navigasi ponsel">
+            {navigasi.map((n) => (
+              <Link
+                key={n.href}
+                href={n.href}
+                onClick={() => setBuka(false)}
+                className={cn(
+                  "rounded-full px-4 py-3 text-[15px] transition-colors",
+                  aktif(n.href)
+                    ? "bg-timbul text-tinta"
+                    : "text-tinta-2 hover:bg-timbul/60 hover:text-tinta",
+                )}
+              >
+                {n.label}
+              </Link>
+            ))}
+            <Link
+              href="/unduh"
+              onClick={() => setBuka(false)}
+              className="mt-1.5 flex h-11 items-center justify-center gap-2 rounded-full bg-tinta text-[14.5px] font-semibold text-latar"
+            >
+              Unduh NaoVert
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

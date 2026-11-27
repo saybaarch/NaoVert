@@ -83,24 +83,27 @@ export function Tanda({
       aria-hidden="true"
       {...sisa}
     >
-      {/* Batang kiri: tipis, mulai lebih rendah, berhenti di simpul. */}
-      <rect
-        x="-1.9"
-        y="0"
-        width="3.8"
-        height="21.87"
-        transform="translate(5.9 6.2) rotate(62.5)"
-      />
-      {/* Batang kanan: lebih tebal, turun lebih dalam. */}
-      <rect
-        x="-2.55"
-        y="0"
-        width="5.1"
-        height="22.76"
-        transform="translate(26.1 5.2) rotate(116.34)"
-      />
+      {/*
+       * Batang kiri: lebih tipis, berhenti di simpul.
+       *
+       * Semua angka dihitung dari titik atas ke simpul, bukan dikira kira.
+       * Dari (6.2, 4.6) ke (16, 26.5) panjangnya 23,993 dan arahnya 24,108
+       * derajat ke kanan bawah. Sudut lama 62,5 derajat membuat batang ini
+       * menjauh ke kiri luar kanvas dan berakhir di (-13,5, 16,3), sehingga
+       * huruf V tidak pernah terbentuk.
+       */}
+      <g transform="translate(6.2 4.6) rotate(-24.108)">
+        <rect x="-1.6" y="0" width="3.2" height="23.993" />
+      </g>
+      {/*
+       * Batang kanan: lebih tebal sebagai ciri tanda ini. Dari (25.8, 4.6)
+       * ke simpul panjangnya sama, arahnya 24,108 derajat ke kiri bawah.
+       */}
+      <g transform="translate(25.8 4.6) rotate(24.108)">
+        <rect x="-2.1" y="0" width="4.2" height="23.993" />
+      </g>
       {/* Simpul tembaga di titik temu. */}
-      <circle cx="16" cy="25.6" r="3" fill="var(--tembaga)" style={simpul ? undefined : { display: "none" }} />
+      <circle cx="16" cy="26.5" r="2.6" fill="var(--tembaga)" style={simpul ? undefined : { display: "none" }} />
     </svg>
   );
 }

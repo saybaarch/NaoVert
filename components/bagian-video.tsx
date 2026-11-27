@@ -25,10 +25,10 @@ export default function BagianVideo() {
             <>
               Cara memakainya,
               <br />
-              <span className="text-tinta-3">dalam enam puluh detik.</span>
+              <span className="text-tinta-3">dari berkas pertama sampai selesai.</span>
             </>
           }
-          penjelas="Rekaman aplikasi yang sesungguhnya, bukan gambar hiasan. Setiap langkah disorot supaya jelas bagian mana yang sedang dipakai."
+          penjelas="Rekaman aplikasi yang sesungguhnya, dengan suara yang menjelaskan tiap langkah. Sorotan menunjukkan bagian mana yang sedang dipakai."
         />
 
         <Muncul className="mt-12">

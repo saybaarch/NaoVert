@@ -26,6 +26,7 @@
 @theme {
   --font-sans: var(--font-aksi), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-angka), ui-monospace, monospace;
+  --font-serif: var(--font-judul), ui-serif, Georgia, serif;
 
   --wadah: 1180px;
   --wadah-sempit: 780px;
@@ -42,7 +43,10 @@
 
   --tinta: #eeeae4;
   --tinta-2: #b3aca2;
-  --tinta-3: #8a857e;
+  /* Dinaikkan dari #8a857e: nilai lama gagal 4.5:1 di atas --latar-timbul
+     (4,16) dan itulah permukaan yang muncul saat baris disorot. Nilai ini
+     lulus di ketiga permukaan: 4,74 / 5,16 / 5,54. */
+  --tinta-3: #948f88;
 
   --tembaga: #c07d4f;
   --tembaga-redup: #8a6244;
@@ -63,7 +67,9 @@
 
   --tinta: #17191c;
   --tinta-2: #4a4741;
-  --tinta-3: #6b6660;
+  /* Sama alasannya dengan tema gelap: nilai lama #6b6660 hanya 4,41 di atas
+     --latar-timbul. Nilai ini lulus di ketiga permukaan: 4,76 / 5,84 / 5,35. */
+  --tinta-3: #666159;
 
   --tembaga: #96541f;
   --tembaga-redup: #b07a4e;
@@ -171,6 +177,50 @@
   }
 
   /*
+   * Kapsul navigasi.
+   *
+   * Satu satunya bentuk bulat penuh di halaman, dipakai khusus untuk alat
+   * navigasi supaya ia terbaca sebagai lapisan terpisah dari dokumen.
+   * Perubahannya saat digulir halus dan kecil: lebar menyusut, latar lebih
+   * padat, bayangan muncul. Tidak ada warna baru yang diperkenalkan.
+   */
+  .kapsul-nav {
+    height: 60px;
+    max-width: 1108px;
+    background: color-mix(in srgb, var(--latar) 74%, transparent);
+    border-color: var(--garis);
+    backdrop-filter: blur(12px) saturate(1.1);
+    transition: max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+                height 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 320ms ease,
+                border-color 320ms ease,
+                box-shadow 420ms ease;
+  }
+
+  .kapsul-padat {
+    height: 54px;
+    max-width: 980px;
+    background: color-mix(in srgb, var(--latar) 90%, transparent);
+    border-color: var(--garis-2);
+    box-shadow: 0 12px 34px -20px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Panel menu ponsel ikut kapsul, bukan kotak penuh. */
+  .kapsul-menu {
+    max-width: 976px;
+  }
+
+  @media (max-width: 639px) {
+    .kapsul-nav,
+    .kapsul-padat {
+      max-width: none;
+    }
+    .kapsul-menu {
+      max-width: none;
+    }
+  }
+
+  /*
    * Garis kemajuan baca, tipis di paling atas jendela. Panjangnya diatur
    * komponen lewat --maju. Gunanya memberi tahu sudah sejauh mana halaman
    * dibaca, tanpa menambah bilah tebal yang memakan ruang.
@@ -188,26 +238,39 @@
   }
 
   /*
-   * Judul utama. Lebih kecil dari acuan sebelumnya karena kalimatnya lebih
-   * panjang: 92px di layar lebar, bukan 109px. Yang membuatnya terasa besar
-   * adalah ruang di sekitarnya, bukan angkanya.
+   * Judul utama. Serif, bukan sans. Huruf serif di sini bekerja seperti
+   * tanda kutip pada tulisan: ia menandai bahwa ini pernyataan pembuka,
+   * bukan label. Ukurannya lebih kecil dari sans karena serif terbaca lebih
+   * besar pada ukuran yang sama, dan jarak barisnya dirapatkan supaya
+   * barisnya terbaca sebagai satu blok.
    */
   .judul-besar {
-    font-size: clamp(2.5rem, 6.4vw, 5.75rem);
-    line-height: 0.99;
-    letter-spacing: -0.042em;
-    font-weight: 620;
+    font-family: var(--font-serif);
+    font-size: clamp(2.7rem, 6.6vw, 6rem);
+    line-height: 0.94;
+    letter-spacing: -0.024em;
+    font-weight: 400;
     text-wrap: balance;
   }
 
+  /*
+   * Judul bagian memakai serif yang sama. Yang membedakannya dari judul
+   * utama hanya ukuran, jadi tidak perlu huruf ketiga.
+   */
   .judul-bagian {
-    font-size: clamp(1.85rem, 4vw, 3.25rem);
-    line-height: 1.04;
-    letter-spacing: -0.038em;
-    font-weight: 600;
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 4.1vw, 3.35rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    font-weight: 400;
     text-wrap: balance;
   }
 
+  /*
+   * Judul kecil kembali ke sans. Di ukuran ini serif mulai kehilangan
+   * ketegasan pada layar, dan judul kecil dipakai untuk hal yang harus
+   * dipindai cepat, bukan dibaca sebagai pernyataan.
+   */
   .judul-kecil {
     font-size: clamp(1.3rem, 2.2vw, 1.75rem);
     line-height: 1.18;
@@ -215,18 +278,27 @@
     font-weight: 600;
   }
 
-  /* Label kecil. Huruf besar berspasi lebar, warnanya sudah lulus kontras. */
+  /*
+   * Label kecil. Huruf besar berspasi lebar, warnanya sudah lulus kontras.
+   * Spasi 0,13em, bukan 0,17em seperti sebelumnya: pada ukuran 11px spasi
+   * selebar itu membuat kata terlepas satu sama lain.
+   */
   .label {
     font-size: 0.6875rem;
-    letter-spacing: 0.17em;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
     font-weight: 500;
     color: var(--tinta-3);
   }
 
+  /*
+   * Paragraf pengantar. Ukurannya naik sedikit dan jarak barisnya dilonggarkan
+   * karena teks ini dibaca, bukan dipindai. Lebarnya dibatasi 62 huruf, batas
+   * yang membuat mata tidak kehilangan baris saat kembali ke kiri.
+   */
   .lead {
-    font-size: 1.0625rem;
-    line-height: 1.68;
+    font-size: 1.125rem;
+    line-height: 1.7;
     color: var(--tinta-2);
     max-width: 62ch;
   }

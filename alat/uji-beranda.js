@@ -56,33 +56,26 @@ const KELUAR = path.join(AKAR, ".uji");  // foto uji, diabaikan git
 
   const laporan = {};
 
-  /* 1. Kanvas tiga dimensi benar benar melukis sesuatu. */
-  laporan.kanvas = await halaman.evaluate(() => {
-    const c = document.querySelector("canvas");
-    if (!c) return { ada: false };
-    const gl = c.getContext("webgl2") || c.getContext("webgl");
-    if (!gl) return { ada: true, konteks: null };
-
-    const w = c.width, h = c.height;
-    const px = new Uint8Array(w * h * 4);
-    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
-
-    let berwarna = 0;
-    const ragam = new Set();
-    for (let i = 0; i < px.length; i += 4) {
-      const r = px[i], g = px[i + 1], b = px[i + 2];
-      if (r + g + b > 90) berwarna++;
-      if (i % 1600 === 0) ragam.add(`${r >> 3},${g >> 3},${b >> 3}`);
-    }
-    return {
-      ada: true,
-      lebar: w,
-      tinggi: h,
-      piksel_berwarna: berwarna,
-      porsi_berwarna: +(berwarna / (w * h)).toFixed(4),
-      ragam_warna: ragam.size,
-    };
-  });
+  /* 1. Kanvas tiga dimensi punya konteks dan ukuran yang benar.
+     *
+     * Isi pikselnya sengaja TIDAK diperiksa di sini. gl.readPixels setelah
+     * bingkai dikomposisikan selalu mengembalikan nol karena konteksnya tidak
+     * memakai preserveDrawingBuffer, sehingga laporan lama berbunyi "0 piksel
+     * berwarna" padahal tandanya tergambar. Pemeriksaan isi ada di
+     * alat/uji-tanda3d.js, yang memotret elemennya dan membandingkan dua
+     * tangkapan untuk memastikan tandanya bergerak. */
+    laporan.kanvas = await halaman.evaluate(() => {
+      const c = document.querySelector("canvas");
+      if (!c) return { ada: false };
+      const gl = c.getContext("webgl2") || c.getContext("webgl");
+      return {
+        ada: true,
+        lebar: c.width,
+        tinggi: c.height,
+        konteks: gl ? gl.getParameter(gl.VERSION) : null,
+        tampil: c.getBoundingClientRect().width > 100,
+      };
+    });
 
   /* 2. Pengalih tema benar benar mengubah warna latar. */
   const ambilLatar = () =>

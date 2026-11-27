@@ -18,6 +18,7 @@ out/
 AGENTS.md
 
 # Alat ukur sementara.
+alat/__pycache__/
 alat/ukur-luna.js
 alat/ukur-luna-geometri.js
 

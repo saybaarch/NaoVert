@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import KemajuanBaca from "@/components/kemajuan-baca";
@@ -7,15 +7,32 @@ import { situs } from "@/lib/data";
 import "./globals.css";
 
 /*
- * Dua huruf saja. Instrument Sans untuk seluruh teks: bentuknya netral tetapi
- * punya ketegasan di ujung huruf, dan tidak sedang dipakai semua orang seperti
- * huruf antar muka bawaan. JetBrains Mono hanya untuk angka dan label teknis,
- * karena angka harus sejajar rapi saat dibandingkan.
+ * Tiga huruf, tiga tugas, tidak ada yang dipakai di luar tugasnya.
+ *
+ * Instrument Sans untuk seluruh teks antar muka. Bentuknya netral tetapi
+ * ujung hurufnya tegas, dan tidak semeriah huruf antar muka bawaan.
+ *
+ * Instrument Serif hanya untuk judul besar. Alasannya bukan hiasan: perkakas
+ * teknis biasanya tampil serba sans dan monospace, jadi serif yang dipakai
+ * hemat membuat judul terbaca sebagai pernyataan, bukan sebagai label. Huruf
+ * ini juga sekerabat dengan sans di atas, jadi keduanya tidak bertengkar.
+ *
+ * JetBrains Mono untuk angka, ekstensi berkas, dan nama mesin. Bukan untuk
+ * kesan terminal, melainkan karena angka dan ekstensi di halaman ini sering
+ * dibandingkan dan harus sejajar rapi.
  */
 const aksi = Instrument_Sans({
   subsets: ["latin"],
   variable: "--font-aksi",
   display: "swap",
+});
+
+const judul = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-judul",
+  display: "swap",
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 const angka = JetBrains_Mono({
@@ -90,7 +107,11 @@ const skripTema = `(function(){try{var t=localStorage.getItem("naovert-tema");if
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${aksi.variable} ${angka.variable}`} suppressHydrationWarning>
+    <html
+      lang="id"
+      className={`${aksi.variable} ${judul.variable} ${angka.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: skripTema }} />
       </head>
