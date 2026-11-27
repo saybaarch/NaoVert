@@ -125,14 +125,17 @@ export default function Hero() {
       const total = Math.max(r.height - window.innerHeight, 1);
       const p = Math.min(Math.max(-r.top / total, 0), 1);
 
-      /* Urutan acuan, tanpa dilangkahi: satu, layar membesar dari 0,955 ke 1.
-       * Dua, akordeon masuk dari kiri. Tiga, wajah berganti dengan garis
-       * kemajuan. */
-      const tumbuh = Math.min(Math.max(p / 0.12, 0), 1);
+      /* Urutan acuan, tanpa dilangkahi:
+       * 1. Layar membesar dari 0,955 ke 1, benar-benar di tengah.
+       * 2. Layar bergeser sedikit ke kanan, membuka ruang di kiri.
+       * 3. Akordeon masuk dari kiri setelah ruangnya terbuka.
+       * 4. Wajah berganti dengan garis kemajuan. */
+      const tumbuh = Math.min(Math.max(p / 0.1, 0), 1);
       el.style.setProperty("--s", String(0.955 + tumbuh * 0.045));
-      el.style.setProperty("--ak", String(Math.min(Math.max((p - 0.1) / 0.06, 0), 1)));
+      el.style.setProperty("--geser", String(Math.min(Math.max((p - 0.06) / 0.08, 0), 1)));
+      el.style.setProperty("--ak", String(Math.min(Math.max((p - 0.13) / 0.07, 0), 1)));
 
-      const maju = Math.min(Math.max((p - 0.16) / 0.84, 0), 1) * mode.length;
+      const maju = Math.min(Math.max((p - 0.2) / 0.8, 0), 1) * mode.length;
       const indeks = Math.min(Math.floor(maju), mode.length - 1);
       if (indeks !== lalu) {
         lalu = indeks;
@@ -236,7 +239,7 @@ export default function Hero() {
           <div className="panggung-skala w-full origin-center">
             <div className="mx-auto w-full max-w-[86rem] px-6">
               <div className="relative flex flex-col lg:block">
-                <div className="relative order-1 w-full lg:mx-auto lg:w-[71.621%]">
+                <div className="panggung-geser relative order-1 w-full lg:mx-auto lg:w-[71.621%]">
                   <div className="tampilan-aplikasi relative aspect-[2562/1642]">
                     {mode.map((m, i) => (
                       <Image
@@ -254,11 +257,11 @@ export default function Hero() {
                   </div>
                 </div>
 
-                <div className="relative z-10 order-2 mt-8 lg:absolute lg:left-[15.7%] lg:top-1/2 lg:mt-0 lg:w-[19.5rem] lg:-translate-y-1/2">
+                <div className="relative z-10 order-2 mt-8 lg:absolute lg:left-0 lg:top-1/2 lg:mt-0 lg:w-[19.5rem] lg:-translate-y-1/2">
                   <div
                     role="group"
                     aria-label="Bagian aplikasi"
-                    className="panggung-isi lg:bg-latar lg:py-6 lg:pr-8"
+                    className="panggung-isi"
                     style={{
                       opacity: "var(--ak, 0)",
                       transform: "translateX(calc((1 - var(--ak, 0)) * -2.5rem))",

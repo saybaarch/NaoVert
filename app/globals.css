@@ -325,6 +325,14 @@
     .panggung-skala {
       transform: scale(var(--s, 0.955));
     }
+
+    /* Fase dua acuan: layar mulai tepat di tengah, lalu bergeser ke kanan
+     * lebih dulu untuk membuka ruang. Baru akordeon masuk dari kiri.
+     * 20% dari lebar layar cukup melewati tepi akordeon. */
+    .panggung-geser {
+      transform: translateX(calc(var(--geser, 0) * 20%));
+      transition: transform 150ms linear;
+    }
   }
 
   .masuk {
