@@ -82,7 +82,7 @@ export default function Header() {
       >
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2.5 rounded-full py-1 pl-2.5 pr-1 text-tinta sm:pl-3"
+          className="flex min-h-11 shrink-0 items-center gap-2.5 rounded-full pl-2.5 pr-1 text-tinta sm:pl-3"
         >
           <Tanda ukuran={22} />
           <span className="text-[15px] font-semibold tracking-[-0.025em]">{situs.nama}</span>
@@ -100,7 +100,7 @@ export default function Header() {
                 href={n.href}
                 aria-current={ini ? "page" : undefined}
                 className={cn(
-                  "rounded-full px-3.5 py-2 text-[13.5px] transition-colors duration-200",
+                  "inline-flex min-h-11 items-center rounded-full px-3.5 text-[13.5px] transition-colors duration-200",
                   ini
                     ? "bg-timbul text-tinta"
                     : "text-tinta-2 hover:bg-timbul/60 hover:text-tinta",
@@ -117,14 +117,14 @@ export default function Header() {
             type="button"
             onClick={gantiTema}
             aria-label={tema === "gelap" ? "Ganti ke tema terang" : "Ganti ke tema gelap"}
-            className="grid size-10 place-items-center rounded-full text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta"
+            className="grid size-11 place-items-center rounded-full text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta"
           >
             <Ikon nama={tema === "gelap" ? "matahari" : "bulan"} ukuran={17} />
           </button>
 
           <Link
             href="/unduh"
-            className="hidden h-10 items-center justify-center rounded-full bg-tinta px-5 text-[13.5px] font-semibold tracking-[-0.006em] text-latar transition-colors hover:bg-tinta-2 sm:inline-flex"
+            className="hidden h-11 items-center justify-center rounded-full bg-tinta px-5 text-[13.5px] font-semibold tracking-[-0.006em] text-latar transition-colors hover:bg-tinta-2 sm:inline-flex"
           >
             Unduh
           </Link>
@@ -135,7 +135,7 @@ export default function Header() {
             aria-expanded={buka}
             aria-controls="menu-ponsel"
             aria-label={buka ? "Tutup menu" : "Buka menu"}
-            className="grid size-10 place-items-center rounded-full text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta md:hidden"
+            className="grid size-11 place-items-center rounded-full text-tinta-2 transition-colors hover:bg-timbul hover:text-tinta md:hidden"
           >
             <Ikon nama={buka ? "tutup" : "menu"} ukuran={19} />
           </button>
@@ -154,7 +154,7 @@ export default function Header() {
                 href={n.href}
                 onClick={() => setBuka(false)}
                 className={cn(
-                  "rounded-full px-4 py-3 text-[15px] transition-colors",
+                  "inline-flex min-h-11 items-center rounded-full px-4 py-3 text-[15px] transition-colors",
                   aktif(n.href)
                     ? "bg-timbul text-tinta"
                     : "text-tinta-2 hover:bg-timbul/60 hover:text-tinta",

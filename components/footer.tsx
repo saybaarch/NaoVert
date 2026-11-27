@@ -32,13 +32,17 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-x-10 gap-y-8 text-[13.5px]">
             <div>
-              <p className="label mb-3">Halaman</p>
-              <ul className="flex flex-col gap-2">
+              <p className="label mb-1">Halaman</p>
+              {/* Tautan kaki halaman dinaikkan ke 44px. Sebelumnya tingginya
+                  16px, dan di ponsel itu terlalu kecil untuk jari. Jarak
+                  antarbaris dikurangi supaya kakinya tidak jadi terlalu
+                  panjang. */}
+              <ul className="flex flex-col">
                 {navigasi.map((n) => (
                   <li key={n.href}>
                     <Link
                       href={n.href}
-                      className="text-tinta-2 transition-colors hover:text-tinta"
+                      className="inline-flex min-h-11 items-center text-tinta-2 transition-colors hover:text-tinta"
                     >
                       {n.label}
                     </Link>
@@ -47,20 +51,20 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <p className="label mb-3">NaoVert</p>
-              <ul className="flex flex-col gap-2">
+              <p className="label mb-1">NaoVert</p>
+              <ul className="flex flex-col">
                 <li>
-                  <Link href="/unduh" className="text-tinta-2 transition-colors hover:text-tinta">
+                  <Link href="/unduh" className="inline-flex min-h-11 items-center text-tinta-2 transition-colors hover:text-tinta">
                     Unduh
                   </Link>
                 </li>
                 <li>
-                  <Link href="/panduan" className="text-tinta-2 transition-colors hover:text-tinta">
+                  <Link href="/panduan" className="inline-flex min-h-11 items-center text-tinta-2 transition-colors hover:text-tinta">
                     Panduan
                   </Link>
                 </li>
                 <li>
-                  <Link href="/tentang" className="text-tinta-2 transition-colors hover:text-tinta">
+                  <Link href="/tentang" className="inline-flex min-h-11 items-center text-tinta-2 transition-colors hover:text-tinta">
                     Tentang
                   </Link>
                 </li>
