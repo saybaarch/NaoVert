@@ -37,3 +37,7 @@ Thumbs.db
 
 # foto hasil uji peramban
 .uji/
+.vercel
+.env*
+# berkas contoh tetap ikut walau pola di atas menutupi semuanya
+!.env.example
